@@ -53,7 +53,7 @@ var lookup = {
 	getPage: function(path) {
 		try {
 			var file = fs.readFileSync(path),
-				slug = path.replace(__dirname +'/content/', '').trim();
+				slug = path.replace(__dirname.replace(/\\/g, '/') +'/content/', '').trim();
 
 			if(slug.indexOf('index.md') > -1){
 				slug = slug.replace('index.md', '');
@@ -92,15 +92,14 @@ var lookup = {
 		});
 
 		files.forEach(function(filePath){
-			var dir = __dirname.replace(/\\/g, "/") + '/content/';
-			var shortPath = filePath.replace(dir, '').trim(),
+			var shortPath = filePath.replace(__dirname.replace(/\\/g, '/') + '/content/', '').trim(),
 				stat = fs.lstatSync(filePath);
 
 			if(stat.isDirectory()){
 				var sort = 0;
 				if(category_sort){
 					try {
-						var sortFile = fs.readFileSync(__dirname +'/content/'+ shortPath +'/sort');
+						var sortFile = fs.readFileSync(__dirname.replace(/\\/g, '/') +'/content/'+ shortPath +'/sort');
 						sort = parseInt(sortFile.toString('utf-8'), 10);
 					}
 					catch(e){
@@ -162,7 +161,7 @@ var lookup = {
 
 		files.forEach(function(filePath){
 			try {
-				var shortPath = filePath.replace(__dirname +'/content/', '').trim(),
+				var shortPath = filePath.replace(__dirname.replace(/\\/g, '/') +'/content/', '').trim(),
 					file = fs.readFileSync(filePath);
 
 				var meta = lookup.processMeta(file.toString('utf-8'));
@@ -183,7 +182,7 @@ var lookup = {
 			var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
 			var searchResults = lookup.search(searchQuery);
 			searchResults.forEach(function(result){
-				var page = lookup.getPage(__dirname +'/content/'+ result.ref);
+				var page = lookup.getPage(__dirname.replace(/\\/g, '/') +'/content/'+ result.ref);
 				page.excerpt = page.excerpt.replace(new RegExp('('+ searchQuery +')', 'gim'), '<span class="search-query">$1</span>');
 				searchResults.push(page);
 			});
@@ -201,7 +200,7 @@ var lookup = {
 			var slug = req.params[0];
 			if(slug == '/') slug = '/index';
 
-			var filePath = __dirname +'/content'+ slug +'.md',
+			var filePath = __dirname.replace(/\\/g, '/') +'/content'+ slug +'.md',
 				pageList = lookup.getPages(slug);
 
 			if(slug == '/index' && !fs.existsSync(filePath)){
