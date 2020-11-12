@@ -1,5 +1,8 @@
 *** Lookup Changelog ***
 
+version 0.1.2
+ * [Changed] Changed default copyright in config.js
+
 version 0.1.1
  * [Fixed] Error page
 

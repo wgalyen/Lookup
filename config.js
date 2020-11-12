@@ -7,7 +7,7 @@ var config = {
     // Used for the "Get in touch" page footer link
     support_email: '',
     // Footer copyright content
-    copyright: 'Copyright &copy; Lookup',
+    copyright: 'Copyright &copy; '+ new Date().getFullYear() +' - <a href="http://github.io/wgalyen/Lookup">Powered by Lookup</a>',
     // Excerpt length (used in search)
     excerpt_length: 400
 
