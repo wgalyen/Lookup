@@ -1,5 +1,9 @@
 *** Lookup Changelog ***
 
+version 0.2.0
+ * [New] Added page and category sorting functionality
+ * [Fixed] Added better handling of file reading errors in lookup.js
+
 version 0.1.2
  * [Changed] Changed default copyright in config.js
 
