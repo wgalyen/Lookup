@@ -7,7 +7,7 @@ The update process for Lookup is as follows:
 * Make a backup of your `content` folder and your `config.js`. Copy these files somewhere else
 * If you have edited the template you may also need to backup the `views` folder and anything you
 have edited in the `public` folder
-* Download the latest version of Lookup from the [releases page](https://github.com/wgalyen/Raneto/releases)
+* Download the latest version of Lookup from the [releases page](https://github.com/wgalyen/Lookup/releases)
 * Extract the Lookup zip/tar.gz and overwrite all of the files in your existing Lookup install, replacing
 all files and folders
 * Copy your `content` folder and `config.js` file from your backup location back into the install location

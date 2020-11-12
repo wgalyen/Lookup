@@ -40,6 +40,7 @@
     "morgan": "~1.0.0",
     "static-favicon": "~1.0.0",
     "underscore": "^1.6.0",
-    "underscore.string": "^2.3.3"
+    "underscore.string": "^2.3.3",
+    "validator": "^3.13.0"
   }
 }
