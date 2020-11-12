@@ -1,6 +1,6 @@
 {
   "name": "lookup",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Markdown powered Knowledgebase",
   "author": "Warren Galyen <wgalyen@bellhelmets.com>",
   "license": "MIT",
@@ -14,7 +14,6 @@
     "url": "https://github.com/wgalyen/Lookup.git"
   },
   "bugs": "https://github.com/wgalyen/Lookup/issues",
-  "contributors": "https://github.com/wgalyen/Lookup/graphs/contributors",
   "licenses": [
     {
       "type": "MIT",

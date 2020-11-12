@@ -1,4 +1,7 @@
 *** Lookup Changelog ***
 
+version 0.1.1
+ * [Fixed] Error page
+
 version 0.1.0
  * Initial release
