@@ -3,10 +3,12 @@ var path = require('path'),
 	glob = require('glob'),
 	_ = require('underscore'),
 	_s = require('underscore.string'),
+	moment = require('moment'),
 	marked = require('marked'),
-	lunr = require('lunr');
+	lunr = require('lunr'),
+	config = require('./config');
 
-var lookup = {
+var lookuo = {
 
 	metaRegex: /^\/\*([\s\S]*?)\*\//i,
 
@@ -20,7 +22,7 @@ var lookup = {
 	},
 
 	processMeta: function(markdownContent) {
-		var metaArr = markdownContent.match(lookup.metaRegex),
+		var metaArr = markdownContent.match(lookuo.metaRegex),
 			meta = {};
 
 		var metaString = metaArr ? metaArr[1].trim() : '';
@@ -29,7 +31,7 @@ var lookup = {
 			metas.forEach(function(item){
 				var parts = item.split(': ');
 				if(parts[0] && parts[1]){
-					meta[lookup.cleanString(parts[0].trim(), true)] = parts[1].trim();
+					meta[lookuo.cleanString(parts[0].trim(), true)] = parts[1].trim();
 				}
 			});
 		}
@@ -38,15 +40,15 @@ var lookup = {
 	},
 
 	stripMeta: function(markdownContent) {
-		return markdownContent.replace(lookup.metaRegex, '').trim();
+		return markdownContent.replace(lookuo.metaRegex, '').trim();
 	},
 
-	processVars: function(markdownContent, config) {
+	processVars: function(markdownContent) {
 		if(typeof config.base_url !== 'undefined') markdownContent = markdownContent.replace(/\%base_url\%/g, config.base_url);
 		return markdownContent;
 	},
 
-	getPage: function(path, config) {
+	getPage: function(path) {
 		try {
 			var file = fs.readFileSync(path),
 				slug = path.replace(__dirname +'/content/', '').trim();
@@ -56,9 +58,9 @@ var lookup = {
 			}
 			slug = slug.replace('.md', '').trim();
 
-			var meta = lookup.processMeta(file.toString('utf-8')),
-				content = lookup.stripMeta(file.toString('utf-8'));
-			content = lookup.processVars(content, config);
+			var meta = lookuo.processMeta(file.toString('utf-8')),
+				content = lookuo.stripMeta(file.toString('utf-8'));
+			content = lookuo.processVars(content);
 			var html = marked(content);
 
 			return {
@@ -72,7 +74,7 @@ var lookup = {
 		return null;
 	},
 
-	getPages: function(activeSlug, config) {
+	getPages: function(activeSlug) {
 		var page_sort_meta = config.page_sort_meta || '',
 			category_sort = config.category_sort || false,
 			files = glob.sync(__dirname +'/content/**/*'),
@@ -107,7 +109,7 @@ var lookup = {
 					slug: shortPath,
 					title: _s.titleize(_s.humanize(path.basename(shortPath))),
 					is_index: false,
-					class: 'category-'+ lookup.cleanString(shortPath.replace(/\//g, ' ')),
+					class: 'category-'+ lookuo.cleanString(shortPath.replace(/\//g, ' ')),
 					sort: sort,
 					files: []
 				});
@@ -124,7 +126,7 @@ var lookup = {
 					slug = slug.replace('.md', '').trim();
 
 					var dir = path.dirname(shortPath),
-						meta = lookup.processMeta(file.toString('utf-8'));
+						meta = lookuo.processMeta(file.toString('utf-8'));
 
 					if(page_sort_meta && meta[page_sort_meta]) pageSort = parseInt(meta[page_sort_meta], 10);
 
@@ -160,7 +162,7 @@ var lookup = {
 				var shortPath = filePath.replace(__dirname +'/content/', '').trim(),
 					file = fs.readFileSync(filePath);
 
-				var meta = lookup.processMeta(file.toString('utf-8'));
+				var meta = lookuo.processMeta(file.toString('utf-8'));
 				idx.add({
 					'id': shortPath,
 					'title': meta.title ? meta.title : 'Untitled',
@@ -171,8 +173,80 @@ var lookup = {
 		});
 
 		return idx.search(query);
+	},
+
+	handleRequest: function(req, res, next) {
+		if(req.query.search){
+			var searchResults = lookuo.search(req.query.search);
+			searchResults.forEach(function(result){
+				searchResults.push(lookuo.getPage(__dirname +'/content/'+ result.ref));
+			});
+
+			var pageListSearch = lookuo.getPages('');
+			return res.render('search', {
+				config: config,
+				pages: pageListSearch,
+				search: req.query.search,
+				searchResults: searchResults,
+				body_class: 'page-search'
+			});
+		}
+		else if(req.params[0]){
+			var slug = req.params[0];
+			if(slug == '/') slug = '/index';
+
+			var filePath = __dirname +'/content'+ slug +'.md',
+				pageList = lookuo.getPages(slug);
+
+			if(slug == '/index' && !fs.existsSync(filePath)){
+				return res.render('home', {
+					config: config,
+					pages: pageList,
+					body_class: 'page-home'
+				});
+			} else {
+				fs.readFile(filePath, 'utf8', function(err, content) {
+					if(err){
+						err.status = '404';
+						err.message = 'Whoops. Looks like this page doesn\'t exist.';
+						return next(err);
+					}
+
+					// File info
+					var stat = fs.lstatSync(filePath);
+					// Meta
+					var meta = lookuo.processMeta(content);
+					content = lookuo.stripMeta(content);
+					// Content
+					content = lookuo.processVars(content);
+					var html = marked(content);
+
+					return res.render('page', {
+						config: config,
+						pages: pageList,
+						meta: meta,
+						content: html,
+						body_class: 'page-'+ lookuo.cleanString(slug.replace(/\//g, ' ')),
+						last_modified: moment(stat.mtime).format('Do MMM YYYY')
+					});
+				});
+			}
+		} else {
+			next();
+		}
+	},
+
+	handleError: function(err, req, res, next) {
+		res.status(err.status || 500);
+		res.render('error', {
+			config: config,
+			status: err.status,
+			message: err.message,
+			error: {},
+			body_class: 'page-error'
+		});
 	}
 
 };
 
-module.exports = lookup;
+module.exports = lookuo;
