@@ -4,7 +4,7 @@ var express = require('express'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    lookuo = require('./lookuo'),
+    lookup = require('./lookup'),
     app = express();
 
 app.set('views', path.join(__dirname, 'views'));
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.all('*', lookuo.handleRequest);
-app.use(lookuo.handleError);
+app.all('*', lookup.handleRequest);
+app.use(lookup.handleError);
 
 module.exports = app;

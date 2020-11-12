@@ -8,7 +8,7 @@ var path = require('path'),
 	lunr = require('lunr'),
 	config = require('./config');
 
-var lookuo = {
+var lookup = {
 
 	metaRegex: /^\/\*([\s\S]*?)\*\//i,
 
@@ -22,7 +22,7 @@ var lookuo = {
 	},
 
 	processMeta: function(markdownContent) {
-		var metaArr = markdownContent.match(lookuo.metaRegex),
+		var metaArr = markdownContent.match(lookup.metaRegex),
 			meta = {};
 
 		var metaString = metaArr ? metaArr[1].trim() : '';
@@ -31,7 +31,7 @@ var lookuo = {
 			metas.forEach(function(item){
 				var parts = item.split(': ');
 				if(parts[0] && parts[1]){
-					meta[lookuo.cleanString(parts[0].trim(), true)] = parts[1].trim();
+					meta[lookup.cleanString(parts[0].trim(), true)] = parts[1].trim();
 				}
 			});
 		}
@@ -40,7 +40,7 @@ var lookuo = {
 	},
 
 	stripMeta: function(markdownContent) {
-		return markdownContent.replace(lookuo.metaRegex, '').trim();
+		return markdownContent.replace(lookup.metaRegex, '').trim();
 	},
 
 	processVars: function(markdownContent) {
@@ -58,9 +58,9 @@ var lookuo = {
 			}
 			slug = slug.replace('.md', '').trim();
 
-			var meta = lookuo.processMeta(file.toString('utf-8')),
-				content = lookuo.stripMeta(file.toString('utf-8'));
-			content = lookuo.processVars(content);
+			var meta = lookup.processMeta(file.toString('utf-8')),
+				content = lookup.stripMeta(file.toString('utf-8'));
+			content = lookup.processVars(content);
 			var html = marked(content);
 
 			return {
@@ -109,7 +109,7 @@ var lookuo = {
 					slug: shortPath,
 					title: _s.titleize(_s.humanize(path.basename(shortPath))),
 					is_index: false,
-					class: 'category-'+ lookuo.cleanString(shortPath.replace(/\//g, ' ')),
+					class: 'category-'+ lookup.cleanString(shortPath.replace(/\//g, ' ')),
 					sort: sort,
 					files: []
 				});
@@ -126,7 +126,7 @@ var lookuo = {
 					slug = slug.replace('.md', '').trim();
 
 					var dir = path.dirname(shortPath),
-						meta = lookuo.processMeta(file.toString('utf-8'));
+						meta = lookup.processMeta(file.toString('utf-8'));
 
 					if(page_sort_meta && meta[page_sort_meta]) pageSort = parseInt(meta[page_sort_meta], 10);
 
@@ -162,7 +162,7 @@ var lookuo = {
 				var shortPath = filePath.replace(__dirname +'/content/', '').trim(),
 					file = fs.readFileSync(filePath);
 
-				var meta = lookuo.processMeta(file.toString('utf-8'));
+				var meta = lookup.processMeta(file.toString('utf-8'));
 				idx.add({
 					'id': shortPath,
 					'title': meta.title ? meta.title : 'Untitled',
@@ -177,12 +177,12 @@ var lookuo = {
 
 	handleRequest: function(req, res, next) {
 		if(req.query.search){
-			var searchResults = lookuo.search(req.query.search);
+			var searchResults = lookup.search(req.query.search);
 			searchResults.forEach(function(result){
-				searchResults.push(lookuo.getPage(__dirname +'/content/'+ result.ref));
+				searchResults.push(lookup.getPage(__dirname +'/content/'+ result.ref));
 			});
 
-			var pageListSearch = lookuo.getPages('');
+			var pageListSearch = lookup.getPages('');
 			return res.render('search', {
 				config: config,
 				pages: pageListSearch,
@@ -196,7 +196,7 @@ var lookuo = {
 			if(slug == '/') slug = '/index';
 
 			var filePath = __dirname +'/content'+ slug +'.md',
-				pageList = lookuo.getPages(slug);
+				pageList = lookup.getPages(slug);
 
 			if(slug == '/index' && !fs.existsSync(filePath)){
 				return res.render('home', {
@@ -215,10 +215,10 @@ var lookuo = {
 					// File info
 					var stat = fs.lstatSync(filePath);
 					// Meta
-					var meta = lookuo.processMeta(content);
-					content = lookuo.stripMeta(content);
+					var meta = lookup.processMeta(content);
+					content = lookup.stripMeta(content);
 					// Content
-					content = lookuo.processVars(content);
+					content = lookup.processVars(content);
 					var html = marked(content);
 
 					return res.render('page', {
@@ -226,7 +226,7 @@ var lookuo = {
 						pages: pageList,
 						meta: meta,
 						content: html,
-						body_class: 'page-'+ lookuo.cleanString(slug.replace(/\//g, ' ')),
+						body_class: 'page-'+ lookup.cleanString(slug.replace(/\//g, ' ')),
 						last_modified: moment(stat.mtime).format('Do MMM YYYY')
 					});
 				});
@@ -249,4 +249,4 @@ var lookuo = {
 
 };
 
-module.exports = lookuo;
+module.exports = lookup;
