@@ -1,5 +1,6 @@
 /*
 Title: Contributing to Lookup
+Sort: 2
 */
 
 Want to report a bug, request a feature, contribute or translate Lookup? At the moment everything can be

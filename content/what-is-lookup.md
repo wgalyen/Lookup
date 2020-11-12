@@ -1,5 +1,6 @@
 /*
 Title: What is Lookup?
+Sort: 1
 */
 
 Lookup is a Knowledgebase platform for [Node.js](http://nodejs.org) that uses static

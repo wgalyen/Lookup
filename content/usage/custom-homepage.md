@@ -1,5 +1,6 @@
 /*
 Title: Custom Homepage
+Sort: 5
 */
 
 Be default Lookup shows a Knowledgebase homepage which lists your articles (and categories) and has
