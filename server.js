@@ -3,8 +3,9 @@
 'use strict';
 
 // Modules
-var debug = require('debug')('lookup');
-var app   = require('./app.js');
+var debug  = require('debug')('lookup');
+var config = require('./config.js');
+var app    = require('./app/index.js')(config);;
 
 // HTTP Server
 var server = app.listen(app.get('port'), function () {
