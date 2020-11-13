@@ -51,8 +51,10 @@ app.all('*', function(req, res, next) {
         var slug = req.params[0];
         if(slug == '/') slug = '/index';
 
-        var filePath = lookup.config.content_dir + slug +'.md',
-            pageList = lookup.getPages(slug);
+        var pageList = lookup.getPages(slug);
+
+        var filePath = path.normalize(lookup.config.content_dir + slug);
+        if (!fs.existsSync(filePath)) filePath += '.md';
 
         if(slug == '/index' && !fs.existsSync(filePath)){
             return res.render('home', {
@@ -70,22 +72,29 @@ app.all('*', function(req, res, next) {
 
                 // File info
                 var stat = fs.lstatSync(filePath);
-                // Meta
-                var meta = lookup.processMeta(content);
-                content = lookup.stripMeta(content);
-                if(!meta.title) meta.title = lookup.slugToTitle(filePath);
-                // Content
-                content = lookup.processVars(content);
-                var html = marked(content);
 
-                return res.render('page', {
-                    config: config,
-                    pages: pageList,
-                    meta: meta,
-                    content: html,
-                    body_class: 'page-'+ lookup.cleanString(slug),
-                    last_modified: moment(stat.mtime).format('Do MMM YYYY')
-                });
+                // process markdown files
+                if (path.extname(filePath) == '.md') {
+                    // Meta
+                    var meta = lookup.processMeta(content);
+                    content = lookup.stripMeta(content);
+                    if(!meta.title) meta.title = lookup.slugToTitle(filePath);
+                    // Content
+                    content = lookup.processVars(content);
+                    var html = marked(content);
+
+                    return res.render('page', {
+                        config: config,
+                        pages: pageList,
+                        meta: meta,
+                        content: html,
+                        body_class: 'page-'+ lookup.cleanString(slug),
+                        last_modified: moment(stat.mtime).format('Do MMM YYYY')
+                    });
+                } else {
+                    // serve static file
+                    res.sendfile(filePath);
+                }
             });
         }
     } else {
