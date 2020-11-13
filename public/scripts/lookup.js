@@ -1,9 +1,9 @@
-(function($, hljs){
+(function ($, hljs) {
     var current_category;
 
-    $(document).ready(function(){
+    $(document).ready(function () {
 
-        if($('.content').length){
+        if ($('.content').length) {
 
             // Syntax highlighting
             hljs.initHighlightingOnLoad();
@@ -16,54 +16,54 @@
 
         }
 
-        if($('.home-categories').length){
+        if ($('.home-categories').length) {
             $('.home-categories').masonry({
                 columnWidth: '.col',
                 itemSelector: '.col',
                 transitionDuration: 0
             });
         }
-        $(".goto-edit").click(function(){
-            window.location.href = window.location.href + "/edit";
+        $('.goto-edit').click(function () {
+            window.location.href = window.location.href + '/edit';
         });
-        $("#delete-page-confirm").click(function(){
+        $('#delete-page-confirm').click(function () {
             $('#deleteModal').modal('hide');
 
             $.post(
-                "/lk-delete",
+                '/lk-delete',
                 {
-                    "file": window.location.pathname
+                    'file': window.location.pathname
                 },
-                function(data){
-                    switch(data.status){
+                function (data) {
+                    switch (data.status) {
                         case 0:
-                            window.location = "/";
+                            window.location = '/';
                             break;
                     }
                 }
             );
         });
-        $("#add-page-confirm").click(function(){
+        $('#add-page-confirm').click(function () {
             $('#addModal').modal('hide');
-            name = $("#page-name").val().replace(/\s+/g, "-")
+            name = $('#page-name').val().replace(/\s+/g, '-');
             $.post(
-                "/lk-add-page",
+                '/lk-add-page',
                 {
-                    "name": name,
-                    "category": current_category
+                    'name': name,
+                    'category': current_category
                 },
-                function(data){
-                    switch(data.status){
+                function (data) {
+                    switch (data.status) {
                         case 0:
-                            window.location = "/" + current_category + "/" + name + "/edit";
+                            window.location = '/' + current_category + '/' + name + '/edit';
                             break;
                     }
                 }
             );
         });
-        $(".add-page").click(function(){
+        $('.add-page').click(function () {
             text = $(this)
-                .closest("h5")
+                .closest('h5')
                 .clone()
                 .children()
                 .remove()
@@ -71,67 +71,66 @@
                 .text()
                 .trim()
                 .toLowerCase()
-                .replace(/\s+/g, "-");
+                .replace(/\s+/g, '-');
 
             current_category = text;
         });
-        $("#newCategory").keypress(function(e) {
-            if(e.which == 13) {
+        $('#newCategory').keypress(function (e) {
+            if (e.which == 13) {
                 $.post(
-                    "/lk-add-category",
+                    '/lk-add-category',
                     {
-                        "category": $(this)
+                        'category': $(this)
                             .val()
                             .trim()
                             .toLowerCase()
-                            .replace(/\s+/g, "-")
+                            .replace(/\s+/g, '-')
                     },
-                    function(data){
+                    function (data) {
                         location.reload();
                     }
                 );
             }
         });
-        $(".close-edit").click(function(){
+        $('.close-edit').click(function () {
             var the_arr = window.location.href.split('/');
             the_arr.pop();
             to_location = the_arr.join('/');
             window.location = to_location;
         });
-        $(".save-page").click(function(){
+        $('.save-page').click(function () {
             file_arr = window.location.pathname.split('/');
             file_arr.pop();
-            $("#entry-markdown").next('.CodeMirror')[0].CodeMirror.save()
+            $('#entry-markdown').next('.CodeMirror')[0].CodeMirror.save();
 
             $.post(
-                "/lk-edit",
+                '/lk-edit',
                 {
-                    "file": file_arr.join('/'),
-                    "content": $("#entry-markdown").val()
+                    'file': file_arr.join('/'),
+                    'content': $('#entry-markdown').val()
                 },
-                function(data){
-                    switch(data.status){
+                function (data) {
+                    switch (data.status) {
                         case 0:
-                            $("#edit-status").slideUp(function(){
-                                $("#edit-status").text("Page Successfully Saved");
-                                $("#edit-status").removeClass();
-                                $("#edit-status").addClass("alert alert-success");
-                                $("#edit-status").slideDown();
+                            $('#edit-status').slideUp(function () {
+                                $('#edit-status').text('Page Successfully Saved');
+                                $('#edit-status').removeClass();
+                                $('#edit-status').addClass('alert alert-success');
+                                $('#edit-status').slideDown();
                             });
                             break;
                         case 1:
-                            $("#edit-status").slideUp(function(){
-                                $("#edit-status").text("Error Saving Page");
-                                $("#edit-status").removeClass();
-                                $("#edit-status").addClass("alert alert-warning");
-                                $("#edit-status").slideDown();
+                            $('#edit-status').slideUp(function () {
+                                $('#edit-status').text('Error Saving Page');
+                                $('#edit-status').removeClass();
+                                $('#edit-status').addClass('alert alert-warning');
+                                $('#edit-status').slideDown();
                             });
                             break;
                     }
                 }
             );
         });
-
 
     });
 

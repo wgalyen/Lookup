@@ -10,7 +10,7 @@ var config = {
     support_email: '',
 
     // Footer copyright content
-    copyright: 'Copyright &copy; '+ new Date().getFullYear() +' - <a href="http://github.io/wgalyen/lookup">Powered by Lookup</a>',
+    copyright: 'Copyright &copy; ' + new Date().getFullYear() + ' - <a href="http://github.io/wgalyen/lookup">Powered by Lookup</a>',
 
     // Excerpt length (used in search)
     excerpt_length: 400,
@@ -30,7 +30,7 @@ var config = {
     content_dir: './content/',
 
     // Add your analytics tracking code (including script tags)
-    analytics: "",
+    analytics: '',
 
     // Set to true to enable authentication
     authentication: false,

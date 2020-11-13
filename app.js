@@ -25,7 +25,7 @@ app.enable('view cache');
 app.engine('html', require('hogan-express'));
 
 // Setup Express
-app.use(favicon(__dirname +'/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
@@ -35,15 +35,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Setup config
 extend(lookup.config, config);
 
-if (config.authentication === true){
+if (config.authentication === true) {
     app.use(require('basic-auth-connect')(config.credentials.username, config.credentials.password));
 }
 
-app.post("/lk-edit", function(req, res, next){
+app.post('/lk-edit', function (req, res, next) {
     var filePath = path.normalize(lookup.config.content_dir + req.body.file);
-    if(!fs.existsSync(filePath)) filePath += '.md';
-    fs.writeFile(filePath, req.body.content, function(err) {
-        if(err) {
+    if (!fs.existsSync(filePath)) filePath += '.md';
+    fs.writeFile(filePath, req.body.content, function (err) {
+        if (err) {
             console.log(err);
             res.json({
                 status: 1,
@@ -54,15 +54,15 @@ app.post("/lk-edit", function(req, res, next){
 
         res.json({
             status: 0,
-            message: "Page Saved"
+            message: 'Page Saved'
         });
-    }); 
+    });
 });
-app.post("/lk-delete", function(req, res, next){  
+app.post('/lk-delete', function (req, res, next) {
     var filePath = path.normalize(lookup.config.content_dir + req.body.file);
-    if(!fs.existsSync(filePath)) filePath += '.md';
-    fs.rename(filePath, filePath + ".del", function(err) {
-        if(err) {
+    if (!fs.existsSync(filePath)) filePath += '.md';
+    fs.rename(filePath, filePath + '.del', function (err) {
+        if (err) {
             console.log(err);
             res.json({
                 status: 1,
@@ -73,14 +73,14 @@ app.post("/lk-delete", function(req, res, next){
 
         res.json({
             status: 0,
-            message: "Page Deleted"
+            message: 'Page Deleted'
         });
-    }); 
+    });
 });
-app.post("/lk-add-category", function(req, res, next){
+app.post('/lk-add-category', function (req, res, next) {
     var filePath = path.normalize(lookup.config.content_dir + req.body.category);
-    fs.mkdir(filePath, function(err) {
-        if(err) {
+    fs.mkdir(filePath, function (err) {
+        if (err) {
             console.log(err);
             res.json({
                 status: 1,
@@ -91,16 +91,16 @@ app.post("/lk-add-category", function(req, res, next){
 
         res.json({
             status: 0,
-            message: "Category Created"
+            message: 'Category Created'
         });
-    }); 
+    });
 });
-app.post("/lk-add-page", function(req, res, next){
-    var filePath = path.normalize(lookup.config.content_dir + req.body.category + "/" + req.body.name + ".md");
-    fs.open(filePath, "a", function(err, fd) {
-        
+app.post('/lk-add-page', function (req, res, next) {
+    var filePath = path.normalize(lookup.config.content_dir + req.body.category + '/' + req.body.name + '.md');
+    fs.open(filePath, 'a', function (err, fd) {
+
         fs.close(fd);
-        if(err) {
+        if (err) {
             console.log(err);
             res.json({
                 status: 1,
@@ -111,16 +111,16 @@ app.post("/lk-add-page", function(req, res, next){
 
         res.json({
             status: 0,
-            message: "Page Created"
+            message: 'Page Created'
         });
-    }); 
+    });
 
 });
 
 // Handle all requests
-app.get('*', function(req, res, next) {
-    var suffix = "\edit";
-    if(req.query.search){
+app.get('*', function (req, res, next) {
+    var suffix = '\edit';
+    if (req.query.search) {
         var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim(),
             searchResults = lookup.doSearch(searchQuery),
             pageListSearch = lookup.getPages('');
@@ -132,21 +132,20 @@ app.get('*', function(req, res, next) {
             searchResults: searchResults,
             body_class: 'page-search'
         });
-    }
-    else if(req.params[0]){
+    } else if (req.params[0]) {
         var slug = req.params[0];
-        if(slug == '/') slug = '/index';
+        if (slug == '/') slug = '/index';
 
         var pageList = lookup.getPages(slug),
             filePath = path.normalize(lookup.config.content_dir + slug),
             filePathOrig = filePath;
-            
-        if(filePath.indexOf(suffix, filePath.length - suffix.length) !== -1){
-            filePath = filePath.slice(0, - suffix.length - 1);
-        }
-        if(!fs.existsSync(filePath)) filePath += '.md';
 
-        if(slug == '/index' && !fs.existsSync(filePath)){
+        if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
+            filePath = filePath.slice(0, -suffix.length - 1);
+        }
+        if (!fs.existsSync(filePath)) filePath += '.md';
+
+        if (slug == '/index' && !fs.existsSync(filePath)) {
             var stat = fs.lstatSync('./views/home.html');
             return res.render('home', {
                 config: config,
@@ -156,21 +155,21 @@ app.get('*', function(req, res, next) {
             });
         } else {
 
-            if(filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1){
-               
-                 fs.readFile(filePath, 'utf8', function(err, content) {
-                    if(err){
+            if (filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1) {
+
+                fs.readFile(filePath, 'utf8', function (err, content) {
+                    if (err) {
                         err.status = '404';
                         err.message = 'Whoops. Looks like this page doesn\'t exist.';
                         return next(err);
                     }
-                    if(path.extname(filePath) == '.md'){
+                    if (path.extname(filePath) == '.md') {
                         // File info
                         var stat = fs.lstatSync(filePath);
                         // Meta
                         var meta = lookup.processMeta(content);
                         content = lookup.stripMeta(content);
-                        if(!meta.title) meta.title = lookup.slugToTitle(filePath);
+                        if (!meta.title) meta.title = lookup.slugToTitle(filePath);
                         // Content
                         content = lookup.processVars(content);
                         var html = content;
@@ -185,28 +184,28 @@ app.get('*', function(req, res, next) {
                             last_modified: moment(stat.mtime).format('Do MMM YYYY')
                         });
                     }
-                 });
+                });
             } else {
-                fs.readFile(filePath, 'utf8', function(err, content) {
-                    if(err){
+                fs.readFile(filePath, 'utf8', function (err, content) {
+                    if (err) {
                         err.status = '404';
                         err.message = 'Whoops. Looks like this page doesn\'t exist.';
                         return next(err);
                     }
 
                     // Process Markdown files
-                    if(path.extname(filePath) == '.md'){
+                    if (path.extname(filePath) == '.md') {
                         // File info
                         var stat = fs.lstatSync(filePath);
                         // Meta
                         var meta = lookup.processMeta(content);
                         content = lookup.stripMeta(content);
-                        if(!meta.title) meta.title = lookup.slugToTitle(filePath);
+                        if (!meta.title) meta.title = lookup.slugToTitle(filePath);
                         // Content
                         content = lookup.processVars(content);
                         // BEGIN: DISPLAY, NOT EDIT
                         marked.setOptions({
-                          langPrefix: ''
+                            langPrefix: ''
                         });
                         var html = marked(content);
                         // END: DISPLAY, NOT EDIT
@@ -233,7 +232,7 @@ app.get('*', function(req, res, next) {
 });
 
 // Handle any errors
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         config: config,
