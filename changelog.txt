@@ -1,5 +1,13 @@
 *** Lookup Changelog ***
 
+version 0.4.0
+ * [New] Added %image_url% support to Markdown files
+ * [New] Search queries are now highlighted in search results
+ * [Changed] Fallback to generating title from filename if no meta title is set
+ * [Changed] Moved route and error handlers to lookup.js
+ * [Changed] Make search use "/" URL
+ * [Fixed] Fixed __dirname paths in Windows
+
 version 0.3.0
  * [New] Added masonry layout functionality to homepage
  * [New] Added commercial licensing
