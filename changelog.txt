@@ -1,5 +1,10 @@
 *** Lookup Changelog ***
 
+version 0.5.0
+ * [New] Changed app structure (now using lookup-core)
+ * [New] Added a content_dir config option
+ * [New] Added an analytics config option
+
 version 0.4.0
  * [New] Added %image_url% support to Markdown files
  * [New] Search queries are now highlighted in search results
