@@ -32,6 +32,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Setup config
 extend(lookup.config, config);
 
+if (config.authentication === true){
+    app.use(require('basic-auth-connect')(config.credentials.username, config.credentials.password));
+}
+
 app.post("/lk-edit", function(req, res, next){
     var filePath = path.normalize(lookup.config.content_dir + req.body.file);
     if(!fs.existsSync(filePath)) filePath += '.md';
