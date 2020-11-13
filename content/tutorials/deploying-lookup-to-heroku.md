@@ -21,14 +21,14 @@ First you need to open a command shell in the root of your Lookup install. You t
 using the `heroku login` command. You will be asked to setup some `ssh` keys if you haven't done so already.
 Just follow the instructions.
 
-	$ heroku login
-	Enter your Heroku credentials.
-	Email: zeke@example.com
-	Password:
-	Could not find an existing public key.
-	Would you like to generate one? [Yn]
-	Generating new SSH public key.
-	Uploading ssh public key /Users/adam/.ssh/id_rsa.pub
+    $ heroku login
+    Enter your Heroku credentials.
+    Email: zeke@example.com
+    Password:
+    Could not find an existing public key.
+    Would you like to generate one? [Yn]
+    Generating new SSH public key.
+    Uploading ssh public key /Users/adam/.ssh/id_rsa.pub
 
 ## Create a Procfile
 
@@ -45,9 +45,9 @@ Heroku works by deploying a Git repository to their servers. So we need to make 
 Git repository. This also means you will need to commit any changes you make to Git before deploying
 them to Heroku. Thankfully this is easy to setup.
 
-	$ git init
-	$ git add .
-	$ git commit -m "init"
+    $ git init
+    $ git add .
+    $ git commit -m "init"
 
 Remember you will need to `git commit` any future changes you make before deployment.
 
