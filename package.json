@@ -22,7 +22,7 @@
   ],
   "main": "./app",
   "scripts": {
-    "start": "node server.js",
+    "start": "DEBUG=lookup node server.js",
     "postinstall": "npm update && bower install"
   },
   "engines": {
@@ -47,6 +47,6 @@
     "validator": "4.1.0"
   },
   "devDependencies": {
-    "jshint": "2.8.0"
+    "jshint": "2.8npnpm.0"
   }
 }
