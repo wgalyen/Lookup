@@ -4,7 +4,7 @@ var express = require('express'),
     favicon = require('serve-favicon'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser'),
+    body_parser = require('body-parser'),
     _s = require('underscore.string'),
     moment = require('moment'),
     marked = require('marked'),
@@ -27,8 +27,8 @@ app.engine('html', require('hogan-express'));
 // Setup Express
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(body_parser.json());
+app.use(body_parser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
