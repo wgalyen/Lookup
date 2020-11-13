@@ -9,16 +9,19 @@ var express = require('express'),
     moment = require('moment'),
     marked = require('marked'),
     validator = require('validator'),
+    extend = require('extend'),
     lookup = require('lookup-core'),
     config = require('./config'),
     app = express();
 
+// Setup views
 app.set('views', path.join(__dirname, 'views'));
 app.set('layout', 'layout');
 app.set('view engine', 'html');
 app.enable('view cache');
 app.engine('html', require('hogan-express'));
 
+// Setup Express
 app.use(favicon(__dirname +'/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -26,19 +29,16 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-if(config.content_dir) raneto.contentDir = config.content_dir;
+// Setup config
+extend(lookup.config, config);
 
+// Handle all requests
 app.all('*', function(req, res, next) {
     if(req.query.search){
-        var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
-        var searchResults = lookup.doSearch(searchQuery);
-        searchResults.forEach(function(result){
-            var page = lookup.getPage(lookup.contentDir + result.ref, config);
-            page.excerpt = page.excerpt.replace(new RegExp('('+ searchQuery +')', 'gim'), '<span class="search-query">$1</span>');
-            searchResults.push(page);
-        });
+        var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim(),
+            searchResults = lookup.doSearch(searchQuery),
+            pageListSearch = lookup.getPages('');
 
-        var pageListSearch = lookup.getPages('', config);
         return res.render('search', {
             config: config,
             pages: pageListSearch,
@@ -51,8 +51,8 @@ app.all('*', function(req, res, next) {
         var slug = req.params[0];
         if(slug == '/') slug = '/index';
 
-        var filePath = lookup.contentDir + slug +'.md',
-            pageList = lookup.getPages(slug, config);
+        var filePath = lookup.config.content_dir + slug +'.md',
+            pageList = lookup.getPages(slug);
 
         if(slug == '/index' && !fs.existsSync(filePath)){
             return res.render('home', {
@@ -75,7 +75,7 @@ app.all('*', function(req, res, next) {
                 content = lookup.stripMeta(content);
                 if(!meta.title) meta.title = lookup.slugToTitle(filePath);
                 // Content
-                content = lookup.processVars(content, config);
+                content = lookup.processVars(content);
                 var html = marked(content);
 
                 return res.render('page', {
@@ -93,6 +93,7 @@ app.all('*', function(req, res, next) {
     }
 });
 
+// Handle any errors
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {

@@ -11,7 +11,7 @@ are going to use Heroku to host our Lookup Knowledgebase.
 
 Before we get going there are a few things we need to make sure we have in place first:
 
-1. We are going to assume you have already [installed](%base_url%/install/installing-raneto) and setup Lookup on your local machine
+1. We are going to assume you have already [installed](%base_url%/install/installing-lookup) and setup Lookup on your local machine
 2. You are going to need a [Heroku user account](https://signup.heroku.com/signup) (its free)
 3. You will also need to have the [Heroku Toolbelt](https://toolbelt.heroku.com) installed
 
