@@ -32,91 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Setup config
 extend(lookup.config, config);
 
-if (config.authentication === true){
-    app.use(require('basic-auth-connect')(config.credentials.username, config.credentials.password));
-}
-
-app.post("/lk-edit", function(req, res, next){
-    var filePath = path.normalize(lookup.config.content_dir + req.body.file);
-    if(!fs.existsSync(filePath)) filePath += '.md';
-    fs.writeFile(filePath, req.body.content, function(err) {
-        if(err) {
-            console.log(err);
-            res.json({
-                status: 1,
-                message: err
-            });
-            return;
-        }
-
-        res.json({
-            status: 0,
-            message: "Page Saved"
-        });
-    });
-});
-app.post("/lk-delete", function(req, res, next){
-    var filePath = path.normalize(lookup.config.content_dir + req.body.file);
-    if(!fs.existsSync(filePath)) filePath += '.md';
-    fs.rename(filePath, filePath + ".del", function(err) {
-        if(err) {
-            console.log(err);
-            res.json({
-                status: 1,
-                message: err
-            });
-            return;
-        }
-
-        res.json({
-            status: 0,
-            message: "Page Deleted"
-        });
-    });
-});
-app.post("/lk-add-category", function(req, res, next){
-    var filePath = path.normalize(lookup.config.content_dir + req.body.category);
-    fs.mkdir(filePath, function(err) {
-        if(err) {
-            console.log(err);
-            res.json({
-                status: 1,
-                message: err
-            });
-            return;
-        }
-
-        res.json({
-            status: 0,
-            message: "Category Created"
-        });
-    });
-});
-app.post("/lk-add-page", function(req, res, next){
-    var filePath = path.normalize(lookup.config.content_dir + req.body.category + "/" + req.body.name + ".md");
-    fs.open(filePath, "a", function(err, fd) {
-
-        fs.close(fd);
-        if(err) {
-            console.log(err);
-            res.json({
-                status: 1,
-                message: err
-            });
-            return;
-        }
-
-        res.json({
-            status: 0,
-            message: "Page Created"
-        });
-    });
-
-});
-
 // Handle all requests
-app.get('*', function(req, res, next) {
-    var suffix = "\edit";
+app.all('*', function(req, res, next) {
     if(req.query.search){
         var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim(),
             searchResults = lookup.doSearch(searchQuery),
@@ -135,12 +52,7 @@ app.get('*', function(req, res, next) {
         if(slug == '/') slug = '/index';
 
         var pageList = lookup.getPages(slug),
-            filePath = path.normalize(lookup.config.content_dir + slug),
-            filePathOrig = filePath;
-
-        if(filePath.indexOf(suffix, filePath.length - suffix.length) !== -1){
-            filePath = filePath.slice(0, - suffix.length - 1);
-        }
+            filePath = path.normalize(lookup.config.content_dir + slug);
         if(!fs.existsSync(filePath)) filePath += '.md';
 
         if(slug == '/index' && !fs.existsSync(filePath)){
@@ -150,69 +62,41 @@ app.get('*', function(req, res, next) {
                 body_class: 'page-home'
             });
         } else {
-            if(filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1){
+            fs.readFile(filePath, 'utf8', function(err, content) {
+                if(err){
+                    err.status = '404';
+                    err.message = 'Whoops. Looks like this page doesn\'t exist.';
+                    return next(err);
+                }
 
-                fs.readFile(filePath, 'utf8', function(err, content) {
-                    if(err){
-                        err.status = '404';
-                        err.message = 'Whoops. Looks like this page doesn\'t exist.';
-                        return next(err);
-                    }
-                    if(path.extname(filePath) == '.md'){
-                        // File info
-                        var stat = fs.lstatSync(filePath);
-                        // Meta
-                        var meta = lookup.processMeta(content);
-                        content = lookup.stripMeta(content);
-                        if(!meta.title) meta.title = lookup.slugToTitle(filePath);
-                        // Content
-                        content = lookup.processVars(content);
-                        var html = content;
+                // Process Markdown files
+                if(path.extname(filePath) == '.md'){
+                    // File info
+                    var stat = fs.lstatSync(filePath);
+                    // Meta
+                    var meta = lookup.processMeta(content);
+                    content = lookup.stripMeta(content);
+                    if(!meta.title) meta.title = lookup.slugToTitle(filePath);
+                    // Content
+                    content = lookup.processVars(content);
+                    marked.setOptions({
+                        langPrefix: ''
+                    });
+                    var html = marked(content);
 
-                        return res.render('edit', {
-                            config: config,
-                            pages: pageList,
-                            meta: meta,
-                            content: html,
-                            body_class: 'page-'+ lookup.cleanString(slug),
-                            last_modified: moment(stat.mtime).format('Do MMM YYYY')
-                        });
-                    }
-                });
-            } else {
-                fs.readFile(filePath, 'utf8', function(err, content) {
-                    if(err){
-                        err.status = '404';
-                        err.message = 'Whoops. Looks like this page doesn\'t exist.';
-                        return next(err);
-                    }
-
-                    // Process Markdown files
-                    if(path.extname(filePath) == '.md'){
-                        // File info
-                        var stat = fs.lstatSync(filePath);
-                        // Meta
-                        var meta = lookup.processMeta(content);
-                        content = lookup.stripMeta(content);
-                        if(!meta.title) meta.title = lookup.slugToTitle(filePath);
-                        // Content
-                        content = lookup.processVars(content);
-                        var html = marked(content);
-
-                        return res.render('page', {
-                            config: config,
-                            pages: pageList,
-                            meta: meta,
-                            content: html,
-                            body_class: 'page-'+ lookup.cleanString(slug),
-                            last_modified: moment(stat.mtime).format('Do MMM YYYY')
-                        });
-                    } else {
-                        // Serve static file
-                        res.sendfile(filePath);
-                    }
-                });
-            }
+                    return res.render('page', {
+                        config: config,
+                        pages: pageList,
+                        meta: meta,
+                        content: html,
+                        body_class: 'page-'+ lookup.cleanString(slug),
+                        last_modified: moment(stat.mtime).format('Do MMM YYYY')
+                    });
+                } else {
+                    // Serve static file
+                    res.sendfile(filePath);
+                }
+            });
         }
     } else {
         next();
