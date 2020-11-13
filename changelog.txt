@@ -1,5 +1,13 @@
 *** Lookup Changelog ***
 
+version 0.7.0
+ * [New] Added online editing of pages
+ * [New] Added HTTP Basic authentication
+ * [New] Added custom template layouts
+ * [Fixed] Highlight.js language detection
+ * [Fixed] Mobile design layout
+ * [Fixed] Added config.base_url in front of all assets
+
 version 0.6.0
  * [Changed] Static files (e.g. images) can now be served from the content folder
  * [Changed] Removed licensing
