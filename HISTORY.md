@@ -1,5 +1,17 @@
 # Lookup Changelog
 
+v0.7.1
+===================
+
+  * **[New]** Theme support. Copy `themes/default/` to `themes/<new name>/` and edit.
+  * **[New]** Added toggle for enabling online editing of pages
+  * **[New]** Preparing for Lookup to be NPM-installable (see example/ for new usage)
+  * **[New]** Codified Bower dependencies into bower.json
+  * **[Upgraded]** Upgraded Bower modules in bower.json (current)
+  * **[Upgraded]** Upgraded Node.js modules in package.json (current)
+  * **[Removed]** ./bin/www script. Replace with "npm start"
+  * **[Removed]** Unused modules
+
 v0.7.0
 ===================
 
