@@ -52,6 +52,8 @@
 	</div>
 </footer>
 
+{{#config.allow_editing}}
+
 <!-- Modal: Add Page -->
 <div class="modal fade" id="addModal" tabindex="-1">
 	<div class="modal-dialog">
@@ -90,6 +92,8 @@
 		</div>
 	</div>
 </div>
+
+{{/config.allow_editing}}
 
 <!-- JavaScript -->
 <script src="{{config.base_url}}/bower_components/jquery/dist/jquery.min.js"></script>

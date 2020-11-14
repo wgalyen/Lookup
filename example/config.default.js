@@ -33,9 +33,11 @@ var configDefault = {
     // Add your analytics tracking code (including script tags)
     analytics: '',
 
-    // Set to true to enable authentication
-    authentication: false,
+    // Set to false to disable the web editor
+    allow_editing : true,
 
+    // Set to true to enable HTTP Basic Authentication
+    authentication: false,
     credentials: {
         username: 'admin',
         password: 'password'
