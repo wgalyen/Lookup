@@ -43,8 +43,8 @@ var configDefault = {
     // Add your analytics tracking code (including script tags)
     analytics: '',
 
-    // Set to false to disable the web editor
-    allow_editing : true,
+    // Set to true to enable the web editor
+    allow_editing : false,
 
     // Set to true to enable HTTP Basic Authentication
     authentication : false,
