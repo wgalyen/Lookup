@@ -27,7 +27,7 @@ var configDefault = {
     image_url: '/images',
 
     // Specify the path of your content folder where all your '.md' files are located
-    content_dir: './content/',
+    content_dir: './example/content/',
     public_dir: './public/',
 
     // Add your analytics tracking code (including script tags)
