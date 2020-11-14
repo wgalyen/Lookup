@@ -1,6 +1,6 @@
 {
   "name"         : "lookup",
-  "version"      : "0.7.0",
+  "version"      : "0.7.1",
   "description"  : "Markdown powered Knowledgebase",
   "homepage"     : "https://github.com/wgalyen/Lookup",
   "author"       : "Warren Galyen <wgalyen@bellhelmets.com>",
