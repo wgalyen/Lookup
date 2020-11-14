@@ -9,7 +9,7 @@ var configDefault = {
     // Used for the "Get in touch" page footer link
     support_email: '',
 
-    // Footer copyright content
+    // Footer Text / Copyright
     copyright: 'Copyright &copy; ' + new Date().getFullYear() + ' - <a href="http://github.io/wgalyen/lookup">Powered by Lookup</a>',
 
     // Excerpt length (used in search)
@@ -24,14 +24,21 @@ var configDefault = {
     category_sort: true,
 
     // Which Theme to Use?
+    theme_dir  : __dirname + '/../themes/',
     theme_name : 'default',
 
-    // The base URL of your images folder (can use %image_url% in Markdown files)
-    image_url: '/images',
-
     // Specify the path of your content folder where all your '.md' files are located
-    content_dir: './example/content/',
-    public_dir: './public/',
+    // Fix: Needs trailing slash for now!
+    // Fix: Cannot be an absolute path
+    content_dir : 'content/',
+
+    // Where is the public directory or document root?
+    public_dir  : __dirname + '/../public/',
+
+    // The base URL of your images folder,
+    // Relative to config.public_dir
+    // (can use %image_url% in Markdown files)
+    image_url: '/images',
 
     // Add your analytics tracking code (including script tags)
     analytics: '',
@@ -40,10 +47,10 @@ var configDefault = {
     allow_editing : true,
 
     // Set to true to enable HTTP Basic Authentication
-    authentication: false,
-    credentials: {
-        username: 'admin',
-        password: 'password'
+    authentication : false,
+    credentials    : {
+        username : 'admin',
+        password : 'password'
     }
 
 };
