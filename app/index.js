@@ -107,7 +107,7 @@ function initialize (config) {
         });
 
         app.post('/lk-add-page', function (req, res, next) {
-            var filePath = path.normalize(lookup.config.content_dir + req.body.category + '/' + req.body.name + '.md');
+            var filePath = path.normalize(lookup.config.content_dir + (!!req.body.category ? req.body.category + '/' : '') + req.body.name + '.md');
             fs.open(filePath, 'a', function (err, fd) {
                 fs.close(fd);
                 if (err) {
