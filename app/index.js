@@ -142,8 +142,7 @@ function initialize (config) {
 
             var slug = req.params[0];
             if (slug === '/') { slug = '/index'; }
-            console.log('X', lookup.config.content_dir);
-            console.log('Y', path.normalize(lookup.config.content_dir + slug));
+
             var pageList     = lookup.getPages(slug);
             var filePath     = path.normalize(lookup.config.content_dir + slug);
             var filePathOrig = filePath;
