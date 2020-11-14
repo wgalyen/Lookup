@@ -1,8 +1,6 @@
 var gulp = require('gulp');
 var shell = require('gulp-shell');
 
-gulp.task('default', ['copy_libs']);
-
 gulp.task('copy_libs', function() {
     var source = [
         'node_modules/bootstrap/**/*',
@@ -19,3 +17,6 @@ gulp.task('copy_libs', function() {
 
     return stream;
 });
+
+// Default
+gulp.task('default', gulp.series('copy_libs'));

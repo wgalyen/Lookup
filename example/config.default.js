@@ -1,4 +1,8 @@
-var configDefault = {
+
+'use strict';
+
+// Exports
+module.exports = {
 
     // Your site title (format: page_title - site_title)
     site_title: 'Lookup Docs',
@@ -54,5 +58,3 @@ var configDefault = {
     }
 
 };
-
-module.exports = configDefault;
