@@ -22,7 +22,7 @@
   ],
   "main": "./app",
   "scripts": {
-    "start": "DEBUG=lookup node server.js",
+    "start": "DEBUG=lookup node ./example/server.js",
     "postinstall": "npm update && bower install"
   },
   "engines": {

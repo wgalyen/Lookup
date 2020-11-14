@@ -1,4 +1,4 @@
-var config = {
+var configDefault = {
 
     // Your site title (format: page_title - site_title)
     site_title: 'Lookup Docs',
@@ -43,4 +43,4 @@ var config = {
 
 };
 
-module.exports = config;
+module.exports = configDefault;
