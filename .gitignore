@@ -4,8 +4,8 @@ package-lock.json
 # Dependency directory
 node_modules
 
-# Bower Components (Installed Automatically)
-public/bower_components/
+# npm Components (Installed Automatically)
+public/lib/
 
 # Misc
 *.pages

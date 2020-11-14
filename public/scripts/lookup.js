@@ -12,8 +12,7 @@
             $('.content table').addClass('table');
 
             // FitVids
-            $('.content').fitVids();
-
+            fitvids(".content");
         }
 
         if ($('.home-categories').length) {

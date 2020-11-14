@@ -23,7 +23,7 @@
   "main": "./app",
   "scripts": {
     "start": "DEBUG=lookup node ./example/server.js",
-    "postinstall": "npm update && bower install"
+    "postinstall": "npm update && ./node_modules/gulp/bin/gulp.js"
   },
   "engines": {
     "node": ">=0.10.x"
@@ -31,14 +31,19 @@
   "dependencies": {
     "basic-auth-connect": "1.0.0",
     "body-parser": "1.14.1",
+    "bootstrap": "3.3.5",
     "cookie-parser": "1.4.0",
     "debug": "2.2.0",
     "express": "4.13.3",
     "extend": "3.0.0",
+    "fitvids": "1.0.2",
+    "highlightjs": "8.7.0",
     "hogan-express": "0.5.2",
+    "jquery": "2.1.4",
     "lookup-core": "github:wgalyen/lookup-core",
     "lunr": "0.5.12",
     "marked": "0.3.5",
+    "masonry-layout": "3.3.2",
     "moment": "2.10.6",
     "morgan": "1.6.1",
     "serve-favicon": "2.3.0",
@@ -47,6 +52,8 @@
     "validator": "4.1.0"
   },
   "devDependencies": {
-    "jshint": "2.8npnpm.0"
+    "gulp": "3.9.0",
+    "gulp-shell": "0.5.0",
+    "jshint": "2.8.0"
   }
 }
