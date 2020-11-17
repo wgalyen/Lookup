@@ -7,10 +7,11 @@ var debug = require('debug')('lookup');
 
 // Here is where we load Lookup.
 // When you are in your own project repository,
-// Lookup is installed via NPM and loaded as:
-var lookup = require('lookup');
-// If you want to use the local file (for development), use instead:
-// var lookup = require('../app/index.js');;
+// Lookup should be installed via NPM and loaded as:
+// var lookup = require('lookup');
+//
+// For development purposes, we load it this way in this example:
+var lookup = require('../app/index.js');
 
 // Then, we load our configuration file
 // This can be done inline, with a JSON file,

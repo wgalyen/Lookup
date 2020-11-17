@@ -1,5 +1,6 @@
 .idea
 package-lock.json
+example/package-lock.json
 
 # Dependency directory
 node_modules
