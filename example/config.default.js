@@ -50,8 +50,8 @@ module.exports = {
     // Set to true to enable the web editor
     allow_editing : false,
 
-    // Set to true to enable HTTP Basic Authentication
-    authentication : false,
+    // Set to true to enable HTTP Authentication
+    authentication : true,
     credentials    : {
         username : 'admin',
         password : 'password'
