@@ -243,6 +243,7 @@ function initialize (config) {
                 config        : config,
                 pages         : pageList,
                 body_class    : 'page-home',
+                meta          : config.home_meta,
                 last_modified : moment(stat.mtime).format('Do MMM YYYY'),
                 loggedIn: (config.authentication ? req.session.loggedIn : false)
             });
