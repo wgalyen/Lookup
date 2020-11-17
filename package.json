@@ -20,9 +20,7 @@
       "url": "https://raw.githubusercontent.com/wgalyen/Lookup/master/LICENSE"
     }
   ],
-  "bin": {
-    "lookup": "./bin/lookup.js"
-  },
+  "bin": "./bin/lookup.js",
   "main": "./app",
   "scripts": {
     "start": "DEBUG=lookup node example/server.js",
