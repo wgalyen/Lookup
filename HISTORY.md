@@ -1,5 +1,17 @@
 # Lookup Changelog
 
+v0.8.0
+===================
+
+  * **[Fixed]** URI Decoding with non-Latin characters
+  * **[Fixed]** Windows compatibility (use `npm run start_win`)
+  * **[New]** Added Login Page to replace HTTP Basic Auth
+  * **[New]** Added ability to run Lookup as a PM2 service
+  * **[New]** Main Articles is now a category editable in the UI
+  * **[New]** Using NPM for client-side libraries
+  * **[Upgraded]** Improved Live Editor layout
+  * **[Removed]** Bower for client-side libraries
+
 v0.7.1
 ===================
 
