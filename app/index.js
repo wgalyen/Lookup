@@ -62,7 +62,7 @@ function initialize (config) {
             }
         ));
 
-        app.post('/lk-login', function (req, res, next) {
+        app.post('/rn-login', function (req, res, next) {
             if(req.param('username') === config.credentials.username
                 && req.param('password') === config.credentials.password)
             {
@@ -104,7 +104,7 @@ function initialize (config) {
     // Online Editor Routes
     if (config.allow_editing === true) {
 
-        app.post('/lk-edit', isAuthenticated, function (req, res, next) {
+        app.post('/rn-edit', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.file);
             if (!fs.existsSync(filePath)) { filePath += '.md'; }
             fs.writeFile(filePath, req.body.content, function (err) {
@@ -122,7 +122,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-delete', isAuthenticated, function (req, res, next) {
+        app.post('/rn-delete', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.file);
             if (!fs.existsSync(filePath)) { filePath += '.md'; }
             fs.rename(filePath, filePath + '.del', function (err) {
@@ -140,7 +140,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-add-category', isAuthenticated, function (req, res, next) {
+        app.post('/rn-add-category', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.category);
             fs.mkdir(filePath, function (err) {
                 if (err) {
@@ -157,7 +157,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-add-page', isAuthenticated, function (req, res, next) {
+        app.post('/rn-add-page', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + (!!req.body.category ? req.body.category + '/' : '') + req.body.name + '.md');
             fs.open(filePath, 'a', function (err, fd) {
                 fs.close(fd);
@@ -191,7 +191,7 @@ function initialize (config) {
                 search: searchQuery,
                 searchResults: searchResults,
                 body_class: 'page-search',
-                loggedIn: (req.session.loggedIn)
+                loggedIn: (config.authentication ? req.session.loggedIn : false)
             });
 
         } else {
@@ -213,7 +213,7 @@ function initialize (config) {
                 pages         : pageList,
                 body_class    : 'page-home',
                 last_modified : moment(stat.mtime).format('Do MMM YYYY'),
-                loggedIn      : (req.session.loggedIn)
+                loggedIn: (config.authentication ? req.session.loggedIn : false)
             });
         }
     });
@@ -269,7 +269,7 @@ function initialize (config) {
                             content: html,
                             body_class: template + '-' + lookup.cleanString(slug),
                             last_modified: moment(stat.mtime).format('Do MMM YYYY'),
-                            loggedIn: (req.session.loggedIn)
+                            loggedIn: (config.authentication ? req.session.loggedIn : false)
                         });
 
                     }
@@ -313,7 +313,7 @@ function initialize (config) {
                             content: html,
                             body_class: template + '-' + lookup.cleanString(slug),
                             last_modified: moment(stat.mtime).format('Do MMM YYYY'),
-                            loggedIn: (req.session.loggedIn)
+                            loggedIn: (config.authentication ? req.session.loggedIn : false)
                         });
 
                     }
@@ -333,7 +333,7 @@ function initialize (config) {
             message    : err.message,
             error      : {},
             body_class : 'page-error',
-            loggedIn: (req.session.loggedIn)
+            loggedIn   : (config.authentication ? req.session.loggedIn : false)
         });
     });
 
