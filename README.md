@@ -8,25 +8,33 @@ Requirements
 
 * [Node.js](http://nodejs.org) **v4.0.0** (or later)
 
-Install
--------
-
-1. Download the latest version of Lookup from the [releases page](https://github.com/wgalyen/Lookup/releases)
-2. Create a new directory where you would like to run the app, and un-zip the package to that location
-3. Fire up a Terminal, the Node Command Prompt or shell and change directory to the root of the Lookup application (where app.js and config.js are)
-4. Run `npm install` to install the node dependencies
-5. To start Lookup, run `npm start` (or `npm run start_win` on Windows)
-6. Visit `http://localhost:3000` in your web browser
-
-Accessing Lookup
-----------------
-
-Visit `http://localhost:3000` in your web browser.
-
 Demo & Docs
 -----------
 
-See http://github.io/wgalyen/lookup
+See [http://github.io/wgalyen/lookup](http://github.io/wgalyen/lookup)
+
+Install
+-----------
+
+It is recommended to create a new Git repository to store your documentation files and then install Lookup as a dependency into it.  
+See the `example/` directory for how this implementation works.
+6. Visit `http://localhost:3000` in your web browser
+
+1. Switch to your existing or new project directory
+2. Add Lookup to your project via NPM's package.json file or downloading the latest version from the [releases page](https://github.com/wgalyen/Lookup/releases)
+3. In a terminal, run `npm install` to install the node dependencies
+4. To start Lookup, run `npm start` (or `npm run start_win` on Windows)
+5. Visit `http://localhost:3000` in your web browser
+
+Running as a Service
+--------------------
+
+You can run Lookup easily in the background on your local or production machines with PM2.
+
+1. Install Lookup globally with `npm install -g lookup`
+2. Edit the configuration file in your global NPM `node_modules/` directory (locate with `which lookup` on *NIX)
+3. Run Lookup with `lookup start` and access logs with `lookup logs`
+4. When finished, run `lookup stop`
 
 Production Notes
 ----------------
