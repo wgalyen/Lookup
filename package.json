@@ -24,7 +24,7 @@
   "main": "./app",
   "scripts": {
     "start": "DEBUG=lookup node example/server.js",
-    "start_win": "set DEBUG=look && node example/server.js",
+    "start_win": "set DEBUG=lookup && node example/server.js",
     "postinstall": "npm update && npm run gulp",
     "gulp": "gulp"
   },

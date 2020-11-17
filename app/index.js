@@ -32,8 +32,9 @@ function initialize (config) {
     app.set('port', process.env.PORT || 3000);
 
     // Setup Views
+    if (!config.theme_dir)  { config.theme_dir  = path.join(__dirname, '..', 'themes'); }
     if (!config.theme_name) { config.theme_name = 'default'; }
-    app.set('views', path.join(__dirname, '..', 'themes', config.theme_name, 'templates'));
+    app.set('views', path.join(config.theme_dir, config.theme_name, 'templates'));
     app.set('layout', 'layout');
     app.set('view engine', 'html');
     app.enable('view cache');
@@ -62,35 +63,35 @@ function initialize (config) {
         ));
 
         app.post('/lk-login', function (req, res, next) {
-            if (req.param('username') === config.credentials.username
+            if(req.param('username') === config.credentials.username
                 && req.param('password') === config.credentials.password)
             {
-                req.ession.loggedIn = true;
+                req.session.loggedIn = true;
                 res.json({
-                    status: 1,
-                    message: 'Login Successful'
+                    status  : 1,
+                    message : 'Login Successful'
                 });
             } else {
                 res.json({
-                    status: 0,
-                    message: 'Invalid Username/Password Combination'
+                    status  : 0,
+                    message : 'Invalid Username/Password Combination'
                 });
             }
         });
 
-        app.get("/login", function(req, res, next) {
+        app.get("/login", function(req, res, next){
             return res.render('login', {
-                layout: null
+                layout : null
             });
         });
-        app.get("/logout", function(req, res, next) {
+        app.get("/logout", function(req, res, next){
             req.session.loggedIn = false;
             res.redirect("/login");
         });
 
         // Authentication Middleware
         isAuthenticated = function(req, res, next) {
-            if (!req.session.loggedIn) {
+            if (! req.session.loggedIn) {
                 res.redirect(403, "/login");
 
                 return;
@@ -177,7 +178,7 @@ function initialize (config) {
     }
 
     // Router for / and /index with or without search parameter
-    app.get("/:var(index)?", function(req, res, next) {
+    app.get("/:var(index)?", function(req, res, next){
         if (req.query.search) {
 
             var searchQuery    = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
@@ -236,7 +237,7 @@ function initialize (config) {
             if (filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1) {
 
                 fs.readFile(filePath, 'utf8', function (err, content) {
-                    if (config.authentication === true && !req.session.loggedIn) {
+                    if (config.authentication === true && ! req.session.loggedIn) {
                         res.redirect("/login");
                         return;
                     }
@@ -276,7 +277,8 @@ function initialize (config) {
 
             } else {
 
-                fs.readFile(filePath, 'utf-8', function (err, content) {
+                fs.readFile(filePath, 'utf8', function (err, content) {
+
                     if (err) {
                         err.status = '404';
                         err.message = 'Whoops. Looks like this page doesn\'t exist.';
@@ -313,6 +315,7 @@ function initialize (config) {
                             last_modified: moment(stat.mtime).format('Do MMM YYYY'),
                             loggedIn: (req.session.loggedIn)
                         });
+
                     }
                 });
             }
