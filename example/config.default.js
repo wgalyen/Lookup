@@ -51,7 +51,7 @@ module.exports = {
     allow_editing : false,
 
     // Set to true to enable HTTP Authentication
-    authentication : true,
+    authentication : false,
     credentials    : {
         username : 'admin',
         password : 'password'

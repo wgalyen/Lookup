@@ -23,6 +23,11 @@ function initialize (config) {
     // New Express App
     var app = express();
 
+    // empty authorization middleware in case we don't need authentication at all
+    var isAuthenticated = function(req, res, next) {
+        return next();
+    };
+
     // Setup Port
     app.set('port', process.env.PORT || 3000);
 
@@ -82,12 +87,23 @@ function initialize (config) {
             req.session.loggedIn = false;
             res.redirect("/login");
         });
+
+        // Authentication Middleware
+        isAuthenticated = function(req, res, next) {
+            if (!req.session.loggedIn) {
+                res.redirect(403, "/login");
+
+                return;
+            }
+
+            return next();
+        }
     }
 
     // Online Editor Routes
     if (config.allow_editing === true) {
 
-        app.post('/lk-edit', function (req, res, next) {
+        app.post('/lk-edit', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.file);
             if (!fs.existsSync(filePath)) { filePath += '.md'; }
             fs.writeFile(filePath, req.body.content, function (err) {
@@ -105,7 +121,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-delete', function (req, res, next) {
+        app.post('/lk-delete', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.file);
             if (!fs.existsSync(filePath)) { filePath += '.md'; }
             fs.rename(filePath, filePath + '.del', function (err) {
@@ -123,7 +139,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-add-category', function (req, res, next) {
+        app.post('/lk-add-category', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + req.body.category);
             fs.mkdir(filePath, function (err) {
                 if (err) {
@@ -140,7 +156,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-add-page', function (req, res, next) {
+        app.post('/lk-add-page', isAuthenticated, function (req, res, next) {
             var filePath = path.normalize(lookup.config.content_dir + (!!req.body.category ? req.body.category + '/' : '') + req.body.name + '.md');
             fs.open(filePath, 'a', function (err, fd) {
                 fs.close(fd);
@@ -162,10 +178,6 @@ function initialize (config) {
 
     // Router for / and /index with or without search parameter
     app.get("/:var(index)?", function(req, res, next) {
-        if (config.authentication === true && !req.session.loggedIn) {
-            res.redirect("/login");
-            return;
-        }
         if (req.query.search) {
 
             var searchQuery    = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
@@ -177,7 +189,8 @@ function initialize (config) {
                 pages: pageListSearch,
                 search: searchQuery,
                 searchResults: searchResults,
-                body_class: 'page-search'
+                body_class: 'page-search',
+                loggedIn: (req.session.loggedIn)
             });
 
         } else {
@@ -198,16 +211,13 @@ function initialize (config) {
                 config        : config,
                 pages         : pageList,
                 body_class    : 'page-home',
-                last_modified : moment(stat.mtime).format('Do MMM YYYY')
+                last_modified : moment(stat.mtime).format('Do MMM YYYY'),
+                loggedIn      : (req.session.loggedIn)
             });
         }
     });
 
     app.get(/^([^.]*)/, function (req, res, next) {
-        if (config.authentication === true && !req.session.loggedIn) {
-            res.redirect("/login");
-            return;
-        }
         var suffix = 'edit';
 
         if (req.params[0]) {
@@ -226,6 +236,11 @@ function initialize (config) {
             if (filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1) {
 
                 fs.readFile(filePath, 'utf8', function (err, content) {
+                    if (config.authentication === true && !req.session.loggedIn) {
+                        res.redirect("/login");
+                        return;
+                    }
+
                     if (err) {
                         err.status = '404';
                         err.message = 'Whoops. Looks like this page doesn\'t exist.';
@@ -252,7 +267,8 @@ function initialize (config) {
                             meta: meta,
                             content: html,
                             body_class: template + '-' + lookup.cleanString(slug),
-                            last_modified: moment(stat.mtime).format('Do MMM YYYY')
+                            last_modified: moment(stat.mtime).format('Do MMM YYYY'),
+                            loggedIn: (req.session.loggedIn)
                         });
 
                     }
@@ -294,7 +310,8 @@ function initialize (config) {
                             meta: meta,
                             content: html,
                             body_class: template + '-' + lookup.cleanString(slug),
-                            last_modified: moment(stat.mtime).format('Do MMM YYYY')
+                            last_modified: moment(stat.mtime).format('Do MMM YYYY'),
+                            loggedIn: (req.session.loggedIn)
                         });
                     }
                 });
@@ -312,7 +329,8 @@ function initialize (config) {
             status     : err.status,
             message    : err.message,
             error      : {},
-            body_class : 'page-error'
+            body_class : 'page-error',
+            loggedIn: (req.session.loggedIn)
         });
     });
 
