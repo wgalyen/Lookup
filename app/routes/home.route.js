@@ -15,7 +15,6 @@ function route_home (config, lookup) {
 
         var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
         var filePath     = path.normalize(lookup.config.content_dir + slug);
-        var filePathOrig = filePath;
 
         if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
             filePath = filePath.slice(0, - suffix.length - 1);

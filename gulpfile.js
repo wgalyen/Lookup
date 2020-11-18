@@ -1,7 +1,11 @@
-var gulp = require('gulp');
-var shell = require('gulp-shell');
 
-gulp.task('copy_libs', function() {
+'use strict';
+
+// Modules
+var gulp = require('gulp');
+
+gulp.task('copy_libs', function () {
+
     var source = [
         'node_modules/bootstrap/**/*',
         'node_modules/fitvids/**/*',
@@ -14,11 +18,10 @@ gulp.task('copy_libs', function() {
 
     var dest = 'public/lib';
 
-    var stream = gulp.src(source, { base: 'node_modules' })
+    return gulp.src(source, { base: 'node_modules' })
         .pipe(gulp.dest(dest));
 
-    return stream;
 });
 
 // Default
-gulp.task('default', gulp.series('copy_libs'));
+gulp.task('default', ['copy_libs']);

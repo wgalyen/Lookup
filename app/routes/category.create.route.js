@@ -1,6 +1,8 @@
 'use strict';
 
 // Modules
+var path     = require('path');
+var fs       = require('fs');
 var sanitize = require('sanitize-filename');
 
 function route_category_create (config, lookup) {
