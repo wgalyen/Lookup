@@ -1,21 +1,19 @@
 'use strict';
 
 // Modules
-var path     = require('path');
-var fs       = require('fs');
-var sanitize = require('sanitize-filename');
+var fs           = require('fs');
+var get_filepath = require('../functions/get_filepath.js');
 
 function route_page_create (config, lookup) {
     return function (req, res, next) {
 
-        var fileCategory = '';
-        if (req.body.category) {
-            fileCategory   = '/' + sanitize(req.body.category);
-        }
-        var fileName     = '/' + sanitize(req.body.name + '.md');
-        var filePath     = path.normalize(lookup.config.content_dir + fileCategory + fileName);
-
-        fs.open(filePath, 'a', function (error, fd) {
+        var filepath = get_filepath({
+            content  : lookup.config.content_dir,
+            category : req.body.category,
+            filename : req.body.name + '.md'
+        });
+        Refactor: Converting page create to use get_filepath()
+        fs.open(filepath, 'a', function (error, fd) {
             fs.close(fd);
             if (error) {
                 return res.json({
