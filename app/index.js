@@ -31,6 +31,9 @@ function remove_image_content_directory (config, pageList) {
 
 function initialize (config) {
 
+    // Load Files
+    var error_handler = require('./middleware/error_handler.js')(config);
+
     // New Express App
     var app = express();
 
@@ -367,18 +370,7 @@ function initialize (config) {
         }
     });
 
-    // Error-Handling Middleware
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            config     : config,
-            status     : err.status,
-            message    : err.message,
-            error      : {},
-            body_class : 'page-error',
-            loggedIn   : (config.authentication ? req.session.loggedIn : false)
-        });
-    });
+    app.use(error_handler);
 
     return app;
 
