@@ -7,7 +7,7 @@ var moment                         = require('moment');
 var marked                         = require('marked');
 var remove_image_content_directory = require('../functions/remove_image_content_directory.js');
 
-function route_wildcard (config, raneto) {
+function route_wildcard (config, lookup) {
     return function (req, res, next) {
 
         // Skip if nothing matched the wildcard Regex
@@ -16,8 +16,8 @@ function route_wildcard (config, raneto) {
         var suffix = 'edit';
         var slug   = req.params[0];
 
-        var pageList     = remove_image_content_directory(config, raneto.getPages(slug));
-        var filePath     = path.normalize(raneto.config.content_dir + slug);
+        var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
+        var filePath     = path.normalize(lookup.config.content_dir + slug);
         var filePathOrig = filePath;
 
         if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
@@ -46,12 +46,12 @@ function route_wildcard (config, raneto) {
                     // File info
                     var stat = fs.lstatSync(filePath);
                     // Meta
-                    var meta = raneto.processMeta(content);
-                    content = raneto.stripMeta(content);
-                    if (!meta.title) { meta.title = raneto.slugToTitle(filePath); }
+                    var meta = lookup.processMeta(content);
+                    content = lookup.stripMeta(content);
+                    if (!meta.title) { meta.title = lookup.slugToTitle(filePath); }
 
                     // Content
-                    content      = raneto.processVars(content);
+                    content      = lookup.processVars(content);
                     var html     = content;
                     var template = meta.template || 'page';
 
@@ -60,7 +60,7 @@ function route_wildcard (config, raneto) {
                         pages         : pageList,
                         meta          : meta,
                         content       : html,
-                        body_class    : template + '-' + raneto.cleanString(slug),
+                        body_class    : template + '-' + lookup.cleanString(slug),
                         last_modified : moment(stat.mtime).format('Do MMM YYYY'),
                         lang          : config.lang,
                         loggedIn      : (config.authentication ? req.session.loggedIn : false)
@@ -87,12 +87,12 @@ function route_wildcard (config, raneto) {
                     var stat = fs.lstatSync(filePath);
 
                     // Meta
-                    var meta = raneto.processMeta(content);
-                    content = raneto.stripMeta(content);
-                    if (!meta.title) { meta.title = raneto.slugToTitle(filePath); }
+                    var meta = lookup.processMeta(content);
+                    content = lookup.stripMeta(content);
+                    if (!meta.title) { meta.title = lookup.slugToTitle(filePath); }
 
                     // Content
-                    content = raneto.processVars(content);
+                    content = lookup.processVars(content);
                     // BEGIN: DISPLAY, NOT EDIT
                     marked.setOptions({
                         langPrefix : ''
@@ -106,7 +106,7 @@ function route_wildcard (config, raneto) {
                         pages         : pageList,
                         meta          : meta,
                         content       : html,
-                        body_class    : template + '-' + raneto.cleanString(slug),
+                        body_class    : template + '-' + lookup.cleanString(slug),
                         last_modified : moment(stat.mtime).format('Do MMM YYYY'),
                         lang          : config.lang,
                         loggedIn      : (config.authentication ? req.session.loggedIn : false)
