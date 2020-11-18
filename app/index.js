@@ -36,6 +36,7 @@ function initialize (config) {
     var error_handler    = require('./middleware/error_handler.js') (config);
     var route_login      = require('./routes/login.route.js')       (config);
     var route_login_page = require('./routes/login_page.route.js')  (config);
+    var route_logout     = require('./routes/logout.route.js');
 
     // New Express App
     var app = express();
@@ -74,10 +75,7 @@ function initialize (config) {
         }));
         app.post('/lk-login', route_login);
         app.get('/login',     route_login_page);
-        app.get("/logout", function(req, res, next){
-            req.session.loggedIn = false;
-            res.redirect("/login");
-        });
+        app.get('/logout',    route_logout);
     }
 
     // Online Editor Routes
