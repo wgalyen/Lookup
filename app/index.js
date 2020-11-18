@@ -24,15 +24,16 @@ function initialize (config) {
     extend(lookup.config, config);
 
     // Load Files
-    var authenticate          = require('./middleware/authenticate.js')  (config);
-    var error_handler         = require('./middleware/error_handler.js') (config);
-    var route_login           = require('./routes/login.route.js')       (config);
-    var route_login_page      = require('./routes/login_page.route.js')  (config);
-    var route_logout          = require('./routes/logout.route.js');
-    var route_page_edit       = require('./routes/page.edit.route.js')   (config, lookup);
-    var route_page_delete     = require('./routes/page.delete.route.js') (config, lookup);
-    var route_page_create     = require('./routes/page.create.route.js') (config, lookup);
-    var route_category_create = require('./routes/category.create.route.js') (config, lookup);
+    var authenticate = require('./middleware/authenticate.js')(config);
+    var error_handler = require('./middleware/error_handler.js')(config);
+    var route_login = require('./routes/login.route.js')(config);
+    var route_login_page = require('./routes/login_page.route.js')(config);
+    var route_logout = require('./routes/logout.route.js');
+    var route_page_edit = require('./routes/page.edit.route.js')(config, lookup);
+    var route_page_delete = require('./routes/page.delete.route.js')(config, lookup);
+    var route_page_create = require('./routes/page.create.route.js')(config, lookup);
+    var route_category_create = require('./routes/category.create.route.js')(config, lookup);
+    var route_search = require('./routes/search.route.js')(config, lookup);
 
     // New Express App
     var app = express();
@@ -73,66 +74,40 @@ function initialize (config) {
 
     // Online Editor Routes
     if (config.allow_editing === true) {
-        app.post('/lk-edit',         authenticate, route_page_edit);
-        app.post('/lk-delete',       authenticate, route_page_delete);
-        app.post('/lk-add-page',     authenticate, route_page_create);
+        app.post('/lk-edit', authenticate, route_page_edit);
+        app.post('/lk-delete', authenticate, route_page_delete);
+        app.post('/lk-add-page', authenticate, route_page_create);
         app.post('/lk-add-category', authenticate, route_category_create);
     }
 
     // Router for / and /index with or without search parameter
-    app.get('/:var(index)?', function (req, res, next) {
-        if (req.query.search) {
+    app.get('/:var(index)?', route_search, function (req, res, next) {
 
-            var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
-            var searchResults = lookup.doSearch(searchQuery);
-            var pageListSearch = remove_image_content_directory(config, lookup.getPages(''));
+        var suffix = 'edit';
+        var slug = req.params[0];
+        var slug = '/index';
 
-            // TODO: Move to Lookup Core
-            // Loop through Results and Extract Category
-            searchResults.forEach(function (result) {
-                result.category = null;
-                var split = result.slug.split('/');
-                if (split.length > 1) {
-                    result.category = split[0];
-                }
-            });
+        var pageList = remove_image_content_directory(config, lookup.getPages(slug));
+        var filePath = path.normalize(lookup.config.content_dir + slug);
+        var filePathOrig = filePath;
 
-            return res.render('search', {
+        if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
+            filePath = filePath.slice(0, -suffix.length - 1);
+        }
+        if (fs.existsSync(filePath + '.md')) {
+            next();
+        } else {
+            var stat = fs.lstatSync(path.join(config.theme_dir, config.theme_name, 'templates', 'home.html'));
+
+            return res.render('home', {
                 config: config,
-                pages: pageListSearch,
-                search: searchQuery,
-                searchResults: searchResults,
-                body_class: 'page-search',
+                pages: pageList,
+                body_class: 'page-home',
+                meta: config.home_meta,
+                last_modified: moment(stat.mtime).format('Do MMM YYYY'),
+                lang: config.lang,
                 loggedIn: (config.authentication ? req.session.loggedIn : false)
             });
-
-        } else {
-            var suffix = 'edit';
-            var slug = req.params[0];
-            var slug = '/index';
-
-            var pageList = remove_image_content_directory(config, lookup.getPages(slug));
-            var filePath = path.normalize(lookup.config.content_dir + slug);
-            var filePathOrig = filePath;
-
-            if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
-                filePath = filePath.slice(0, -suffix.length - 1);
-            }
-            if (fs.existsSync(filePath + '.md')) {
-                next();
-            } else {
-                var stat = fs.lstatSync(path.join(config.theme_dir, config.theme_name, 'templates', 'home.html'));
-
-                return res.render('home', {
-                    config: config,
-                    pages: pageList,
-                    body_class: 'page-home',
-                    meta: config.home_meta,
-                    last_modified: moment(stat.mtime).format('Do MMM YYYY'),
-                    lang: config.lang,
-                    loggedIn: (config.authentication ? req.session.loggedIn : false)
-                });
-            }
         }
     });
 
