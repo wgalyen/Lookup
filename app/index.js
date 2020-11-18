@@ -32,17 +32,13 @@ function remove_image_content_directory (config, pageList) {
 function initialize (config) {
 
     // Load Files
+    var authenticate     = require('./middleware/authenticate.js')  (config);
     var error_handler    = require('./middleware/error_handler.js') (config);
     var route_login      = require('./routes/login.route.js')       (config);
     var route_login_page = require('./routes/login_page.route.js')  (config);
 
     // New Express App
     var app = express();
-
-    // empty authorization middleware in case we don't need authentication at all
-    var isAuthenticated = function(req, res, next) {
-        return next();
-    };
 
     // Setup Port
     app.set('port', process.env.PORT || 3000);
@@ -70,38 +66,24 @@ function initialize (config) {
 
     // HTTP Authentication
     if (config.authentication === true) {
-        app.use(session(
-            {
-                secret: "changeme",
-                name: "lookup.sid",
-                resave: false,
-                saveUninitialized: false
-            }
-        ));
-
+        app.use(session({
+            secret            : 'changeme',
+            name              : 'lookup.sid',
+            resave            : false,
+            saveUninitialized : false
+        }));
         app.post('/lk-login', route_login);
         app.get('/login',     route_login_page);
         app.get("/logout", function(req, res, next){
             req.session.loggedIn = false;
             res.redirect("/login");
         });
-
-        // Authentication Middleware
-        isAuthenticated = function(req, res, next) {
-            if (! req.session.loggedIn) {
-                res.redirect(403, "/login");
-
-                return;
-            }
-
-            return next();
-        }
     }
 
     // Online Editor Routes
     if (config.allow_editing === true) {
 
-        app.post('/lk-edit', isAuthenticated, function (req, res, next) {
+        app.post('/lk-edit', authenticate, function (req, res, next) {
             var req_file     = req.body.file.split('/');
             var fileCategory = '';
             var fileName     = '/' + sanitize(req_file[1]);
@@ -126,7 +108,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-delete', isAuthenticated, function (req, res, next) {
+        app.post('/lk-delete', authenticate, function (req, res, next) {
             var req_file     = req.body.file.split('/');
             var fileCategory = '';
             var fileName     = '/' + sanitize(req_file[1]);
@@ -169,7 +151,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/lk-add-page', isAuthenticated, function (req, res, next) {
+        app.post('/lk-add-page', authenticate, function (req, res, next) {
             var fileCategory = '';
             if (req.body.category) {
                 fileCategory   = '/' + sanitize(req.body.category);
