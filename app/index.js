@@ -1,23 +1,22 @@
-
 'use strict';
 
 // Modules
-var express       = require('express');
-var path          = require('path');
-var fs            = require('fs');
-var favicon       = require('serve-favicon');
-var logger        = require('morgan');
+var express = require('express');
+var path = require('path');
+var fs = require('fs');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
 var cookie_parser = require('cookie-parser');
-var body_parser   = require('body-parser');
-var _s            = require('underscore.string');
-var moment        = require('moment');
-var marked        = require('marked');
-var validator     = require('validator');
-var extend        = require('extend');
-var hogan         = require('hogan-express');
-var session       = require('express-session');
-var sanitize      = require('sanitize-filename');
-var lookup        = require('lookup-core');
+var body_parser = require('body-parser');
+var _s = require('underscore.string');
+var moment = require('moment');
+var marked = require('marked');
+var validator = require('validator');
+var extend = require('extend');
+var hogan = require('hogan-express');
+var session = require('express-session');
+var sanitize = require('sanitize-filename');
+var lookup = require('lookup-core');
 
 function initialize (config) {
 
@@ -26,13 +25,13 @@ function initialize (config) {
 
     // Load Files
     var remove_image_content_directory = require('./functions/remove_image_content_directory.js');
-    var authenticate      = require('./middleware/authenticate.js')  (config);
-    var error_handler     = require('./middleware/error_handler.js') (config);
-    var route_login       = require('./routes/login.route.js')       (config);
-    var route_login_page  = require('./routes/login_page.route.js')  (config);
-    var route_logout      = require('./routes/logout.route.js');
-    var route_page_edit   = require('./routes/page.edit.route.js')   (config, lookup);
-    var route_page_delete = require('./routes/page.delete.route.js') (config, lookup);
+    var authenticate = require('./middleware/authenticate.js')(config);
+    var error_handler = require('./middleware/error_handler.js')(config);
+    var route_login = require('./routes/login.route.js')(config);
+    var route_login_page = require('./routes/login_page.route.js')(config);
+    var route_logout = require('./routes/logout.route.js');
+    var route_page_edit = require('./routes/page.edit.route.js')(config, lookup);
+    var route_page_delete = require('./routes/page.delete.route.js')(config, lookup);
 
     // New Express App
     var app = express();
@@ -41,7 +40,7 @@ function initialize (config) {
     app.set('port', process.env.PORT || 3000);
 
     // Setup Views
-    if (!config.theme_dir)  { config.theme_dir  = path.join(__dirname, '..', 'themes'); }
+    if (!config.theme_dir) { config.theme_dir = path.join(__dirname, '..', 'themes'); }
     if (!config.theme_name) { config.theme_name = 'default'; }
     app.set('views', path.join(config.theme_dir, config.theme_name, 'templates'));
     app.set('layout', 'layout');
@@ -53,7 +52,7 @@ function initialize (config) {
     app.use(favicon(config.public_dir + '/favicon.ico'));
     app.use(logger('dev'));
     app.use(body_parser.json());
-    app.use(body_parser.urlencoded({ extended : false }));
+    app.use(body_parser.urlencoded({ extended: false }));
     app.use(cookie_parser());
     app.use(express.static(config.public_dir));
     app.use(config.image_url, express.static(path.normalize(config.content_dir + config.image_url)));
@@ -61,36 +60,36 @@ function initialize (config) {
     // HTTP Authentication
     if (config.authentication === true) {
         app.use(session({
-            secret            : 'changeme',
-            name              : 'lookup.sid',
-            resave            : false,
-            saveUninitialized : false
+            secret: 'changeme',
+            name: 'lookup.sid',
+            resave: false,
+            saveUninitialized: false
         }));
         app.post('/lk-login', route_login);
-        app.get('/login',     route_login_page);
-        app.get('/logout',    route_logout);
+        app.get('/login', route_login_page);
+        app.get('/logout', route_logout);
     }
 
     // Online Editor Routes
     if (config.allow_editing === true) {
 
-        app.post('/lk-edit',   authenticate, route_page_edit);
+        app.post('/lk-edit', authenticate, route_page_edit);
         app.post('/lk-delete', authenticate, route_page_delete);
 
         app.post('/lk-add-category', isAuthenticated, function (req, res, next) {
             var fileCategory = '/' + sanitize(req.body.category);
-            var filePath     = path.normalize(lookup.config.content_dir + fileCategory);
+            var filePath = path.normalize(lookup.config.content_dir + fileCategory);
             fs.mkdir(filePath, function (err) {
                 if (err) {
                     console.log(err);
                     return res.json({
-                        status  : 1,
-                        message : err
+                        status: 1,
+                        message: err
                     });
                 }
                 res.json({
-                    status  : 0,
-                    message : 'Category Created'
+                    status: 0,
+                    message: 'Category Created'
                 });
             });
         });
@@ -98,22 +97,22 @@ function initialize (config) {
         app.post('/lk-add-page', authenticate, function (req, res, next) {
             var fileCategory = '';
             if (req.body.category) {
-                fileCategory   = '/' + sanitize(req.body.category);
+                fileCategory = '/' + sanitize(req.body.category);
             }
-            var fileName     = '/' + sanitize(req.body.name + '.md');
-            var filePath     = path.normalize(lookup.config.content_dir + fileCategory + fileName);
+            var fileName = '/' + sanitize(req.body.name + '.md');
+            var filePath = path.normalize(lookup.config.content_dir + fileCategory + fileName);
             fs.open(filePath, 'a', function (err, fd) {
                 fs.close(fd);
                 if (err) {
                     console.log(err);
                     return res.json({
-                        status  : 1,
-                        message : err
+                        status: 1,
+                        message: err
                     });
                 }
                 res.json({
-                    status  : 0,
-                    message : 'Page Created'
+                    status: 0,
+                    message: 'Page Created'
                 });
             });
         });
@@ -121,11 +120,11 @@ function initialize (config) {
     }
 
     // Router for / and /index with or without search parameter
-    app.get("/:var(index)?", function(req, res, next){
+    app.get('/:var(index)?', function (req, res, next) {
         if (req.query.search) {
 
-            var searchQuery    = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
-            var searchResults  = lookup.doSearch(searchQuery);
+            var searchQuery = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
+            var searchResults = lookup.doSearch(searchQuery);
             var pageListSearch = remove_image_content_directory(config, lookup.getPages(''));
 
             // TODO: Move to Lookup Core
@@ -150,25 +149,30 @@ function initialize (config) {
         } else {
             var suffix = 'edit';
             var slug = req.params[0];
-            if (slug === '/') { slug = '/index'; }
+            var slug = '/index';
 
-            var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
-            var filePath     = path.normalize(lookup.config.content_dir + slug);
+            var pageList = remove_image_content_directory(config, lookup.getPages(slug));
+            var filePath = path.normalize(lookup.config.content_dir + slug);
             var filePathOrig = filePath;
 
             if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
-                filePath = filePath.slice(0, - suffix.length - 1);
+                filePath = filePath.slice(0, -suffix.length - 1);
             }
-            var stat = fs.lstatSync(path.join(config.theme_dir, config.theme_name, 'templates', 'home.html'));
+            if (fs.existsSync(filePath + '.md')) {
+                next();
+            } else {
+                var stat = fs.lstatSync(path.join(config.theme_dir, config.theme_name, 'templates', 'home.html'));
 
-            return res.render('home', {
-                config        : config,
-                pages         : pageList,
-                body_class    : 'page-home',
-                meta          : config.home_meta,
-                last_modified : moment(stat.mtime).format('Do MMM YYYY'),
-                loggedIn: (config.authentication ? req.session.loggedIn : false)
-            });
+                return res.render('home', {
+                    config: config,
+                    pages: pageList,
+                    body_class: 'page-home',
+                    meta: config.home_meta,
+                    last_modified: moment(stat.mtime).format('Do MMM YYYY'),
+                    lang: config.lang,
+                    loggedIn: (config.authentication ? req.session.loggedIn : false)
+                });
+            }
         }
     });
 
@@ -178,21 +182,22 @@ function initialize (config) {
         if (req.params[0]) {
 
             var slug = req.params[0];
+            if (slug === '/') { slug = '/index'; }
 
-            var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
-            var filePath     = path.normalize(lookup.config.content_dir + slug);
+            var pageList = remove_image_content_directory(config, lookup.getPages(slug));
+            var filePath = path.normalize(lookup.config.content_dir + slug);
             var filePathOrig = filePath;
 
             if (filePath.indexOf(suffix, filePath.length - suffix.length) !== -1) {
-                filePath = filePath.slice(0, - suffix.length - 1);
+                filePath = filePath.slice(0, -suffix.length - 1);
             }
             if (!fs.existsSync(filePath)) { filePath += '.md'; }
 
             if (filePathOrig.indexOf(suffix, filePathOrig.length - suffix.length) !== -1) {
 
                 fs.readFile(filePath, 'utf8', function (err, content) {
-                    if (config.authentication === true && ! req.session.loggedIn) {
-                        res.redirect("/login");
+                    if (config.authentication === true && !req.session.loggedIn) {
+                        res.redirect('/login');
                         return;
                     }
 
@@ -212,8 +217,8 @@ function initialize (config) {
                         if (!meta.title) { meta.title = lookup.slugToTitle(filePath); }
 
                         // Content
-                        content      = lookup.processVars(content);
-                        var html     = content;
+                        content = lookup.processVars(content);
+                        var html = content;
                         var template = meta.template || 'page';
 
                         return res.render('edit', {
