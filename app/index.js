@@ -32,7 +32,8 @@ function remove_image_content_directory (config, pageList) {
 function initialize (config) {
 
     // Load Files
-    var error_handler = require('./middleware/error_handler.js')(config);
+    var error_handler = require('./middleware/error_handler.js') (config);
+    var route_login   = require('./routes/login.route.js')       (config);
 
     // New Express App
     var app = express();
@@ -77,22 +78,7 @@ function initialize (config) {
             }
         ));
 
-        app.post('/rn-login', function (req, res, next) {
-            if(req.param('username') === config.credentials.username
-                && req.param('password') === config.credentials.password)
-            {
-                req.session.loggedIn = true;
-                res.json({
-                    status  : 1,
-                    message : 'Login Successful'
-                });
-            } else {
-                res.json({
-                    status  : 0,
-                    message : 'Invalid Username/Password Combination'
-                });
-            }
-        });
+        app.post('/lk-login', route_login);
 
         app.get("/login", function(req, res, next){
             return res.render('login', {
@@ -119,7 +105,7 @@ function initialize (config) {
     // Online Editor Routes
     if (config.allow_editing === true) {
 
-        app.post('/rn-edit', isAuthenticated, function (req, res, next) {
+        app.post('/lk-edit', isAuthenticated, function (req, res, next) {
             var req_file     = req.body.file.split('/');
             var fileCategory = '';
             var fileName     = '/' + sanitize(req_file[1]);
@@ -144,7 +130,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/rn-delete', isAuthenticated, function (req, res, next) {
+        app.post('/lk-delete', isAuthenticated, function (req, res, next) {
             var req_file     = req.body.file.split('/');
             var fileCategory = '';
             var fileName     = '/' + sanitize(req_file[1]);
@@ -169,7 +155,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/rn-add-category', isAuthenticated, function (req, res, next) {
+        app.post('/lk-add-category', isAuthenticated, function (req, res, next) {
             var fileCategory = '/' + sanitize(req.body.category);
             var filePath     = path.normalize(lookup.config.content_dir + fileCategory);
             fs.mkdir(filePath, function (err) {
@@ -187,7 +173,7 @@ function initialize (config) {
             });
         });
 
-        app.post('/rn-add-page', isAuthenticated, function (req, res, next) {
+        app.post('/lk-add-page', isAuthenticated, function (req, res, next) {
             var fileCategory = '';
             if (req.body.category) {
                 fileCategory   = '/' + sanitize(req.body.category);
