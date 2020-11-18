@@ -12,7 +12,7 @@ function route_page_create (config, lookup) {
             category : req.body.category,
             filename : req.body.name + '.md'
         });
-        Refactor: Converting page create to use get_filepath()
+
         fs.open(filepath, 'a', function (error, fd) {
             fs.close(fd);
             if (error) {
