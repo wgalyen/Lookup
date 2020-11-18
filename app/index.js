@@ -31,6 +31,7 @@ function initialize (config) {
     var route_logout          = require('./routes/logout.route.js');
     var route_page_edit       = require('./routes/page.edit.route.js')   (config, lookup);
     var route_page_delete     = require('./routes/page.delete.route.js') (config, lookup);
+    var route_page_create     = require('./routes/page.create.route.js') (config, lookup);
     var route_category_create = require('./routes/category.create.route.js') (config, lookup);
 
     // New Express App
@@ -72,34 +73,10 @@ function initialize (config) {
 
     // Online Editor Routes
     if (config.allow_editing === true) {
-
         app.post('/lk-edit',         authenticate, route_page_edit);
         app.post('/lk-delete',       authenticate, route_page_delete);
+        app.post('/lk-add-page',     authenticate, route_page_create);
         app.post('/lk-add-category', authenticate, route_category_create);
-
-        app.post('/lk-add-page', authenticate, function (req, res, next) {
-            var fileCategory = '';
-            if (req.body.category) {
-                fileCategory = '/' + sanitize(req.body.category);
-            }
-            var fileName = '/' + sanitize(req.body.name + '.md');
-            var filePath = path.normalize(lookup.config.content_dir + fileCategory + fileName);
-            fs.open(filePath, 'a', function (err, fd) {
-                fs.close(fd);
-                if (err) {
-                    console.log(err);
-                    return res.json({
-                        status: 1,
-                        message: err
-                    });
-                }
-                res.json({
-                    status: 0,
-                    message: 'Page Created'
-                });
-            });
-        });
-
     }
 
     // Router for / and /index with or without search parameter
