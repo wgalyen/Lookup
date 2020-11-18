@@ -3,7 +3,7 @@
 // Modules
 var sanitize = require('sanitize-filename');
 
-function route_page_edit (config, lookup) {
+function route_page_delete (config, lookup) {
     return function (req, res, next) {
 
         var req_file     = req.body.file.split('/');
@@ -16,7 +16,7 @@ function route_page_edit (config, lookup) {
         var filePath     = path.normalize(lookup.config.content_dir + fileCategory + fileName);
         if (!fs.existsSync(filePath)) { filePath += '.md'; }
 
-        fs.writeFile(filePath, req.body.content, function (error) {
+        fs.rename(filePath, filePath + '.del', function (error) {
             if (error) {
                 return res.json({
                     status  : 1,
@@ -25,7 +25,7 @@ function route_page_edit (config, lookup) {
             }
             res.json({
                 status  : 0,
-                message : config.lang.api.pageSaved
+                message : config.lang.api.pageDeleted
             });
         });
 
@@ -33,4 +33,4 @@ function route_page_edit (config, lookup) {
 }
 
 // Exports
-module.exports = route_page_edit;
+module.exports = route_page_delete;
