@@ -48,6 +48,7 @@ function initialize (config) {
     app.use(body_parser.urlencoded({ extended : false }));
     app.use(cookie_parser());
     app.use(express.static(config.public_dir));
+    app.use(config.image_url, express.static(path.normalize(config.content_dir + config.image_url)));
 
     // Setup config
     extend(lookup.config, config);
