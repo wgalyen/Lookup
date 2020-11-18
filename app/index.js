@@ -19,6 +19,16 @@ var session       = require('express-session');
 var sanitize      = require('sanitize-filename');
 var lookup        = require('lookup-core');
 
+function remove_image_content_directory (config, pageList) {
+    var i;
+    for (i = 0; i < pageList.length; i++) {
+        if (pageList[i].slug === config.image_url.replace(/\//g, '')) {
+            pageList.splice(i, 1);
+        }
+    }
+    return pageList;
+}
+
 function initialize (config) {
 
     // New Express App
@@ -205,7 +215,7 @@ function initialize (config) {
 
             var searchQuery    = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
             var searchResults  = lookup.doSearch(searchQuery);
-            var pageListSearch = lookup.getPages('');
+            var pageListSearch = remove_image_content_directory(config, lookup.getPages(''));
 
             // TODO: Move to Lookup Core
             // Loop through Results and Extract Category
@@ -231,7 +241,7 @@ function initialize (config) {
             var slug = req.params[0];
             if (slug === '/') { slug = '/index'; }
 
-            var pageList     = lookup.getPages(slug);
+            var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
             var filePath     = path.normalize(lookup.config.content_dir + slug);
             var filePathOrig = filePath;
 
@@ -258,7 +268,7 @@ function initialize (config) {
 
             var slug = req.params[0];
 
-            var pageList     = lookup.getPages(slug);
+            var pageList     = remove_image_content_directory(config, lookup.getPages(slug));
             var filePath     = path.normalize(lookup.config.content_dir + slug);
             var filePathOrig = filePath;
 
