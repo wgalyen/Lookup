@@ -77,6 +77,15 @@ function route_wildcard (config, lookup) {
 
                 var page_list = remove_image_content_directory(config, lookup.getPages(slug));
 
+                var loggedIn = (config.authentication ? req.session.loggedIn : false);
+
+                var canEdit = false;
+                if (config.authentication) {
+                    canEdit = loggedIn && config.allow_editing;
+                } else {
+                    canEdit = config.allow_editing;
+                }
+
                 return res.render(render, {
                     config        : config,
                     pages         : page_list,
@@ -85,7 +94,8 @@ function route_wildcard (config, lookup) {
                     body_class    : template + '-' + lookup.cleanString(slug),
                     last_modified : moment(stat.mtime).format('Do MMM YYYY'),
                     lang          : config.lang,
-                    loggedIn      : (config.authentication ? req.session.loggedIn : false)
+                    loggedIn      : loggedIn,
+                    canEdit       : canEdit
                 });
 
             }
