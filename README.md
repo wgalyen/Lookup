@@ -26,16 +26,6 @@ See the `example/` directory for how this implementation works.
 4. To start Lookup, run `npm start` (or `npm run start_win` on Windows)
 5. Visit `http://localhost:3000` in your web browser
 
-Running as a Service
---------------------
-
-You can run Lookup easily in the background on your local or production machines with PM2.
-
-1. Install Lookup globally with `npm install -g lookup`
-2. Edit the configuration file in your global NPM `node_modules/` directory (locate with `which lookup` on *NIX)
-3. Run Lookup with `lookup start` and access logs with `lookup logs`
-4. When finished, run `lookup stop`
-
 Production Notes
 ----------------
 
