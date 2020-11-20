@@ -44,6 +44,7 @@ function route_wildcard (config, lookup) {
 
                 // Meta
                 var meta = lookup.processMeta(content);
+                meta.custom_title = meta.title;
                 if (!meta.title) { meta.title = lookup.slugToTitle(file_path); }
 
                 // Content
