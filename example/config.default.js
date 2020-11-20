@@ -50,13 +50,19 @@ var config = {
     allow_editing : false,
 
     // Set to true to enable HTTP Authentication
-    authentication : false,
+    authentication : true,
     // If editing is enabled, set this to true to only authenticate for editing, not for viewing
     authentication_for_edit: false,
-    credentials    : {
+    credentials    : [
+      {
         username : 'admin',
         password : 'password'
-    },
+      },
+      {
+        username : 'admin2',
+        password : 'password'
+      }
+    ],
 
     locale: 'en',
 
