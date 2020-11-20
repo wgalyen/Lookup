@@ -20,6 +20,9 @@ function initialize (config) {
   if (!config.locale) { config.locale = 'en'; }
   config.lang = require('./translations/' + config.locale + '.json');
 
+  // Content_Dir requires trailing slash
+  if (config.content_dir[config.content_dir.length - 1] !== path.sep) config.content_dir += path.sep;
+
   // Setup config
   extend(lookup.config, config);
 
