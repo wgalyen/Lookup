@@ -13,6 +13,13 @@ Demo & Docs
 
 See [http://github.io/wgalyen/lookup](http://github.io/wgalyen/lookup)
 
+Quickstart
+----------
+
+Run this in a terminal and then visit [http://localhost:3000](http://localhost:3000).  
+For full Installation instructions, see the [Installation Guide](http://wgalyen.github.io/lookup/install/installing-raneto).  
+`git clone https://github.com/wgalyen/Lookup.git && cd Lookup && npm install && npm start`
+
 Credits
 -------
 
