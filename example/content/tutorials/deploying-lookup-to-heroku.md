@@ -10,7 +10,7 @@ In this tutorial we are going to use Heroku to host our Lookup Knowledgebase on 
 
 Before we get going there are a few things we need to make sure we have in place first:
 
-1. We are going to assume you have already [installed](%base_url%/install/installing-raneto) and set up Raneto on your local machine
+1. We are going to assume you have already [installed](%base_url%/install/installing-lookup) and set up Lookup on your local machine
 2. You are going to need a free [Heroku user account](https://signup.heroku.com/signup)
 3. You will also need to have the [Heroku Toolbelt](https://toolbelt.heroku.com) installed
 
@@ -31,10 +31,10 @@ Just follow the instructions.
 
 ## Clone Lookup and make edits
 
-Heroku works by deploying a Git repository to their servers.  
-So we need to make your Lookup install is a Git repository.  
-This also means you will need to commit any changes you make to Git before deploying them to Heroku.  
-Thankfully this is easy to setup:  
+Heroku works by deploying a Git repository to their servers.
+So we need to make your Lookup install is a Git repository.
+This also means you will need to commit any changes you make to Git before deploying them to Heroku.
+Thankfully this is easy to setup:
 
     $ git clone https://github.com/wgalyen/Lookup.git
     $ cd Lookup/
@@ -42,7 +42,7 @@ Thankfully this is easy to setup:
     $ git add content/
     $ git commit -m "My Changes"
 
-Remember you will need to `git commit` any future changes you make before deployment.  
+Remember you will need to `git commit` any future changes you make before deployment.
 **NOTE: In the near future, we will isolate Lookup code from your documentation content (coming soon)**
 
 ## Deploy Lookup to Heroku

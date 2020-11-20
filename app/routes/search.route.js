@@ -32,7 +32,7 @@ function route_search (config, lookup) {
             searchResults : searchResults,
             body_class    : 'page-search',
             lang          : config.lang,
-            loggedIn      : (config.authentication ? req.session.loggedIn : false)
+          loggedIn      : ((config.authentication || config.authentication_for_edit) ? req.session.loggedIn : false)
         });
 
     };
