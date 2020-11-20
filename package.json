@@ -56,7 +56,7 @@
     "masonry-layout": "^3.3.2",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
-    "pm2": "1.0.0",
+    "pm2": "^1.1.3",
     "sanitize-filename": "^1.6.3",
     "serve-favicon": "2.3.0",
     "sitemap": "1.8.1",
@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "jshint": "^2.12.0",
-    "mocha": "2.4.5",
-    "supertest": "1.1.0"
+    "mocha": "^3.0.2",
+    "supertest": "^2.0.0"
   }
 }
