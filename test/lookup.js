@@ -6,7 +6,7 @@
 var path   = require('path');
 var chai   = require('chai');
 var expect = chai.expect;
-var lookup = require('../lib/lookup.js');
+var lookup = require('../app/lookup-core/lib/lookup.js');
 
 chai.should();
 chai.config.truncateThreshold = 0;
