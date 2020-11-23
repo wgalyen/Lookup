@@ -13,6 +13,7 @@ var extend        = require('extend');
 var hogan         = require('hogan-express');
 var session       = require('express-session');
 var lookup        = require('lookup-core');
+var passport      = require('passport');
 
 function initialize (config) {
 
@@ -32,6 +33,7 @@ function initialize (config) {
   var authenticate          = require('./middleware/authenticate.js')      (config);
   var always_authenticate   = require('./middleware/always_authenticate.js')      (config);
   var error_handler         = require('./middleware/error_handler.js')     (config);
+  var oauth2                = require('./middleware/oauth2.js');
   var route_login           = require('./routes/login.route.js')           (config);
   var route_login_page      = require('./routes/login_page.route.js')      (config);
   var route_logout          = require('./routes/logout.route.js');
@@ -79,29 +81,51 @@ function initialize (config) {
   // HTTP Authentication
   if (config.authentication === true || config.authentication_for_edit) {
     app.use(session({
-      secret            : 'changeme',
+      secret            : config.secret,
       name              : 'lookup.sid',
       resave            : false,
       saveUninitialized : false
     }));
-    app.post('/rn-login', route_login);
+
+    // OAuth2
+    if (config.googleoauth === true) {
+      app.use(passport.initialize());
+      app.use(passport.session());
+      app.use(oauth2.router(config));
+      app.use(oauth2.template);
+    }
+
+    app.post('/lk-login', route_login);
+    app.get('/logout', route_logout);
     app.get('/login',     route_login_page);
-    app.get('/logout',    route_logout);
   }
 
   // Online Editor Routes
   if (config.allow_editing === true) {
-    var middlewareToUse = config.authentication_for_edit ? always_authenticate : authenticate;
-    app.post('/lk-edit',         middlewareToUse, route_page_edit);
-    app.post('/lk-delete',       middlewareToUse, route_page_delete);
-    app.post('/lk-add-page',     middlewareToUse, route_page_create);
-    app.post('/lk-add-category', middlewareToUse, route_category_create);
+    if (config.googleoauth === true) {
+      app.post('/lk-edit',         oauth2.required, route_page_edit);
+      app.post('/lk-delete',       oauth2.required, route_page_delete);
+      app.post('/lk-add-page',     oauth2.required, route_page_create);
+      app.post('/lk-add-category', oauth2.required, route_category_create);
+    }
+    else {
+      app.post('/lk-edit',         authenticate, route_page_edit);
+      app.post('/lk-delete',       authenticate, route_page_delete);
+      app.post('/lk-add-page',     authenticate, route_page_create);
+      app.post('/lk-add-category', authenticate, route_category_create);
+    }
   }
 
   // Router for / and /index with or without search parameter
   app.get('/sitemap.xml', route_sitemap);
-  app.get('/:var(index)?', route_search, route_home);
-  app.get(/^([^.]*)/, route_wildcard);
+  if (config.googleoauth === true) {
+    app.get('/:var(index)?', oauth2.required, route_search, route_home);
+    app.get(/^([^.]*)/, oauth2.required, route_wildcard);
+  }
+  else {
+    app.get('/:var(index)?', route_search, route_home);
+    app.get(/^([^.]*)/, route_wildcard);
+  }
 
   // Handle Errors
   app.use(error_handler);
