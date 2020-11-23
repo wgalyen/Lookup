@@ -52,6 +52,7 @@
     "js-yaml": "^3.6.1",
     "lookup-core": "github:wgalyen/lookup-core",
     "lunr": "0.5.12",
+    "markdown-toc": "^0.12.16",
     "marked": "^0.3.19",
     "masonry-layout": "^3.3.2",
     "moment": "^2.29.1",

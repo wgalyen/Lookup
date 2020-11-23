@@ -1,7 +1,6 @@
 'use strict';
 
 // Modules
-var url = require('url');
 var path = require('path');
 var fs = require('fs');
 var sm = require('sitemap');
