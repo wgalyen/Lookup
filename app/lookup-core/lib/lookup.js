@@ -1,13 +1,52 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as glob from 'glob';
-import * as _ from 'underscore';
-import * as _s from 'underscore.string';
-import marked from 'marked';
-import lunr from 'lunr';
-import * as yaml from 'yamljs';
+'use strict';
 
-const default_config = {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _path = require('path');
+
+var path = _interopRequireWildcard(_path);
+
+var _fs = require('fs');
+
+var fs = _interopRequireWildcard(_fs);
+
+var _glob = require('glob');
+
+var glob = _interopRequireWildcard(_glob);
+
+var _underscore = require('underscore');
+
+var _ = _interopRequireWildcard(_underscore);
+
+var _underscore2 = require('underscore.string');
+
+var _s = _interopRequireWildcard(_underscore2);
+
+var _marked = require('marked');
+
+var _marked2 = _interopRequireDefault(_marked);
+
+var _lunr = require('lunr');
+
+var _lunr2 = _interopRequireDefault(_lunr);
+
+var _yamljs = require('yamljs');
+
+var yaml = _interopRequireWildcard(_yamljs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var default_config = {
   // The base URL of your site (allows you to use %base_url% in Markdown files)
   base_url: '',
   // The base URL of your images folder (allows you to use %image_url% in Markdown files)
@@ -27,274 +66,318 @@ const default_config = {
 };
 
 // Regex for page meta (considers Byte Order Mark \uFEFF in case there's one)
-const _metaRegex = /^\uFEFF?\/\*([\s\S]*?)\*\//i;
-const _metaRegexYaml = /\uFEFF?\s*([^]*)---/i;
+var _metaRegex = /^\uFEFF?\/\*([\s\S]*?)\*\//i;
+var _metaRegexYaml = /\uFEFF?\s*([^]*)---/i;
 
 function patch_content_dir(content_dir) {
   return content_dir.replace(/\\/g, '/');
 }
 
-class Lookup {
+var Lookup = function () {
+  function Lookup() {
+    _classCallCheck(this, Lookup);
 
-  constructor() {
-    this.config = Object.assign({}, default_config); // Clone default config
+    this.config = _extends({}, default_config); // Clone default config
   }
 
   // Makes filename safe strings
-  cleanString(str, use_underscore) {
-    const u = use_underscore || false;
-    str = str.replace(/\//g, ' ').trim();
-    if (u) {
-      return _s.underscored(str);
-    } else {
-      return _s.trim(_s.dasherize(str), '-');
-    }
-  }
 
-  // Convert a slug to a title
-  slugToTitle(slug) {
-    slug = slug.replace('.md', '').trim();
-    return _s.titleize(_s.humanize(path.basename(slug)));
-  }
 
-  // Get meta information from Markdown content
-  processMeta(markdownContent) {
-    const meta = {};
-    let metaArr;
-    let metaString;
-    let metas;
-
-    let yamlObject;
-    let yamlField;
-
-    switch (true) {
-      case _metaRegex.test(markdownContent):
-        metaArr = markdownContent.match(_metaRegex);
-        metaString = metaArr ? metaArr[1].trim() : '';
-
-        if (metaString) {
-          metas = metaString.match(/(.*): (.*)/ig);
-          metas.forEach(item => {
-            const parts = item.split(': ');
-            if (parts[0] && parts[1]) {
-              meta[this.cleanString(parts[0], true)] = parts[1].trim();
-            }
-          });
-        }
-        break;
-
-      case _metaRegexYaml.test(markdownContent):
-        metaArr = markdownContent.match(_metaRegexYaml);
-        metaString = metaArr ? metaArr[1].trim() : '';
-
-        yamlObject = yaml.parse(metaString);
-
-        for (yamlField in yamlObject) {
-          if (yamlObject.hasOwnProperty(yamlField)) {
-            meta[this.cleanString(yamlField, true)] = ('' + yamlObject[yamlField]).trim();
-          }
-        }
-        break;
-
-      default:
-      // No meta information
-    }
-
-    return meta;
-  }
-
-  // Strip meta from Markdown content
-  stripMeta(markdownContent) {
-    switch (true) {
-      case _metaRegex.test(markdownContent):
-        return markdownContent.replace(_metaRegex, '').trim();
-      case _metaRegexYaml.test(markdownContent):
-        return markdownContent.replace(_metaRegexYaml, '').trim();
-      default:
-        return markdownContent.trim();
-    }
-  }
-
-  // Replace content variables in Markdown content
-  processVars(markdownContent) {
-    if (typeof this.config.base_url !== 'undefined') {
-      markdownContent = markdownContent.replace(/\%base_url\%/g, this.config.base_url);
-    }
-    if (typeof this.config.image_url !== 'undefined') {
-      markdownContent = markdownContent.replace(/\%image_url\%/g, this.config.image_url);
-    }
-    return markdownContent;
-  }
-
-  // Get a page
-  getPage(filePath) {
-    try {
-      const file = fs.readFileSync(filePath);
-      let slug = patch_content_dir(filePath).replace(patch_content_dir(this.config.content_dir), '').trim();
-
-      if (slug.indexOf('index.md') > -1) {
-        slug = slug.replace('index.md', '');
+  _createClass(Lookup, [{
+    key: 'cleanString',
+    value: function cleanString(str, use_underscore) {
+      var u = use_underscore || false;
+      str = str.replace(/\//g, ' ').trim();
+      if (u) {
+        return _s.underscored(str);
+      } else {
+        return _s.trim(_s.dasherize(str), '-');
       }
+    }
+
+    // Convert a slug to a title
+
+  }, {
+    key: 'slugToTitle',
+    value: function slugToTitle(slug) {
       slug = slug.replace('.md', '').trim();
-
-      const meta = this.processMeta(file.toString('utf-8'));
-      let content = this.stripMeta(file.toString('utf-8'));
-      content = this.processVars(content);
-      const html = marked(content);
-
-      return {
-        slug: slug,
-        title: meta.title ? meta.title : this.slugToTitle(slug),
-        body: html,
-        excerpt: _s.prune(_s.stripTags(_s.unescapeHTML(html)), this.config.excerpt_length || 400)
-      };
-    } catch (e) {
-      if (this.config.debug) {
-        console.log(e);
-      }
-      return null;
+      return _s.titleize(_s.humanize(path.basename(slug)));
     }
-  }
 
-  // Get a structured array of the contents of contentDir
-  getPages(activePageSlug) {
-    activePageSlug = activePageSlug || '';
-    const page_sort_meta = this.config.page_sort_meta || '';
-    const category_sort = this.config.category_sort || false;
-    const files = glob.sync(patch_content_dir(this.config.content_dir) + '**/*');
-    const content_dir = path.normalize(patch_content_dir(this.config.content_dir));
-    const filesProcessed = [];
+    // Get meta information from Markdown content
 
-    filesProcessed.push({
-      slug: '.',
-      title: '',
-      is_index: true,
-      class: 'category-index',
-      sort: 0,
-      files: []
-    });
+  }, {
+    key: 'processMeta',
+    value: function processMeta(markdownContent) {
+      var _this = this;
 
-    files.forEach(filePath => {
+      var meta = {};
+      var metaArr = void 0;
+      var metaString = void 0;
+      var metas = void 0;
 
-      const shortPath = path.normalize(filePath).replace(content_dir, '').trim();
-      let stat = fs.lstatSync(filePath);
+      var yamlObject = void 0;
+      var yamlField = void 0;
 
-      if (stat.isSymbolicLink()) {
-        stat = fs.lstatSync(fs.readlinkSync(filePath));
-      }
+      switch (true) {
+        case _metaRegex.test(markdownContent):
+          metaArr = markdownContent.match(_metaRegex);
+          metaString = metaArr ? metaArr[1].trim() : '';
 
-      if (stat.isDirectory()) {
+          if (metaString) {
+            metas = metaString.match(/(.*): (.*)/ig);
+            metas.forEach(function (item) {
+              var parts = item.split(': ');
+              if (parts[0] && parts[1]) {
+                meta[_this.cleanString(parts[0], true)] = parts[1].trim();
+              }
+            });
+          }
+          break;
 
-        let sort = 0;
-        // ignore directories that has an ignore file under it
-        const ignoreFile = patch_content_dir(this.config.content_dir) + shortPath + '/ignore';
+        case _metaRegexYaml.test(markdownContent):
+          metaArr = markdownContent.match(_metaRegexYaml);
+          metaString = metaArr ? metaArr[1].trim() : '';
 
-        if (fs.existsSync(ignoreFile) && fs.lstatSync(ignoreFile).isFile()) {
-          return true;
-        }
+          yamlObject = yaml.parse(metaString);
 
-        if (category_sort) {
-          try {
-            const sortFile = fs.readFileSync(patch_content_dir(this.config.content_dir) + shortPath + '/sort');
-            sort = parseInt(sortFile.toString('utf-8'), 10);
-          } catch (e) {
-            if (this.config.debug) {
-              console.log('No sort file for', patch_content_dir(this.config.content_dir) + shortPath);
+          for (yamlField in yamlObject) {
+            if (yamlObject.hasOwnProperty(yamlField)) {
+              meta[this.cleanString(yamlField, true)] = ('' + yamlObject[yamlField]).trim();
             }
           }
-        }
+          break;
 
-        filesProcessed.push({
-          slug: shortPath,
-          title: _s.titleize(_s.humanize(path.basename(shortPath))),
-          is_index: false,
-          class: 'category-' + this.cleanString(shortPath),
-          sort: sort,
-          files: []
-        });
+        default:
+        // No meta information
       }
 
-      if (stat.isFile() && path.extname(shortPath) === '.md') {
-        try {
+      return meta;
+    }
 
-          const file = fs.readFileSync(filePath);
-          let slug = shortPath;
-          let pageSort = 0;
+    // Strip meta from Markdown content
 
-          if (shortPath.indexOf('index.md') > -1) {
-            slug = slug.replace('index.md', '');
-          }
-
-          slug = slug.replace('.md', '').trim();
-
-          const dir = path.dirname(shortPath);
-          const meta = this.processMeta(file.toString('utf-8'));
-
-          if (page_sort_meta && meta[page_sort_meta]) {
-            pageSort = parseInt(meta[page_sort_meta], 10);
-          }
-
-          const val = _.find(filesProcessed, item => item.slug === dir);
-          val.files.push({
-            slug: slug,
-            title: meta.title ? meta.title : this.slugToTitle(slug),
-            active: activePageSlug.trim() === '/' + slug,
-            sort: pageSort
-          });
-        } catch (e) {
-          if (this.config.debug) {
-            console.log(e);
-          }
-        }
+  }, {
+    key: 'stripMeta',
+    value: function stripMeta(markdownContent) {
+      switch (true) {
+        case _metaRegex.test(markdownContent):
+          return markdownContent.replace(_metaRegex, '').trim();
+        case _metaRegexYaml.test(markdownContent):
+          return markdownContent.replace(_metaRegexYaml, '').trim();
+        default:
+          return markdownContent.trim();
       }
-    });
+    }
 
-    const sortedFiles = _.sortBy(filesProcessed, cat => cat.sort);
-    sortedFiles.forEach(category => {
-      category.files = _.sortBy(category.files, file => file.sort);
-    });
+    // Replace content variables in Markdown content
 
-    return sortedFiles;
-  }
+  }, {
+    key: 'processVars',
+    value: function processVars(markdownContent) {
+      if (typeof this.config.base_url !== 'undefined') {
+        markdownContent = markdownContent.replace(/\%base_url\%/g, this.config.base_url);
+      }
+      if (typeof this.config.image_url !== 'undefined') {
+        markdownContent = markdownContent.replace(/\%image_url\%/g, this.config.image_url);
+      }
+      return markdownContent;
+    }
 
-  // Index and search contents
-  doSearch(query) {
-    const contentDir = patch_content_dir(path.normalize(this.config.content_dir));
-    const files = glob.sync(contentDir + '**/*.md');
-    const idx = lunr(function () {
-      this.field('title', { boost: 10 });
-      this.field('body');
-    });
+    // Get a page
 
-    files.forEach(filePath => {
+  }, {
+    key: 'getPage',
+    value: function getPage(filePath) {
       try {
-        const shortPath = filePath.replace(contentDir, '').trim();
-        const file = fs.readFileSync(filePath);
-        const meta = this.processMeta(file.toString('utf-8'));
+        var file = fs.readFileSync(filePath);
+        var slug = patch_content_dir(filePath).replace(patch_content_dir(this.config.content_dir), '').trim();
 
-        idx.add({
-          id: shortPath,
-          title: meta.title ? meta.title : this.slugToTitle(shortPath),
-          body: file.toString('utf-8')
-        });
+        if (slug.indexOf('index.md') > -1) {
+          slug = slug.replace('index.md', '');
+        }
+        slug = slug.replace('.md', '').trim();
+
+        var meta = this.processMeta(file.toString('utf-8'));
+        var content = this.stripMeta(file.toString('utf-8'));
+        content = this.processVars(content);
+        var html = (0, _marked2.default)(content);
+
+        return {
+          slug: slug,
+          title: meta.title ? meta.title : this.slugToTitle(slug),
+          body: html,
+          excerpt: _s.prune(_s.stripTags(_s.unescapeHTML(html)), this.config.excerpt_length || 400)
+        };
       } catch (e) {
         if (this.config.debug) {
           console.log(e);
         }
+        return null;
       }
-    });
+    }
 
-    const results = idx.search(query);
-    const searchResults = [];
+    // Get a structured array of the contents of contentDir
 
-    results.forEach(result => {
-      const page = this.getPage(this.config.content_dir + result.ref);
-      page.excerpt = page.excerpt.replace(new RegExp('(' + query + ')', 'gim'), '<span class="search-query">$1</span>');
-      searchResults.push(page);
-    });
+  }, {
+    key: 'getPages',
+    value: function getPages(activePageSlug) {
+      var _this2 = this;
 
-    return searchResults;
-  }
-}
+      activePageSlug = activePageSlug || '';
+      var page_sort_meta = this.config.page_sort_meta || '';
+      var category_sort = this.config.category_sort || false;
+      var files = glob.sync(patch_content_dir(this.config.content_dir) + '**/*');
+      var content_dir = path.normalize(patch_content_dir(this.config.content_dir));
+      var filesProcessed = [];
 
-export default new Lookup();
+      filesProcessed.push({
+        slug: '.',
+        title: '',
+        is_index: true,
+        class: 'category-index',
+        sort: 0,
+        files: []
+      });
+
+      files.forEach(function (filePath) {
+
+        var shortPath = path.normalize(filePath).replace(content_dir, '').trim();
+        var stat = fs.lstatSync(filePath);
+
+        if (stat.isSymbolicLink()) {
+          stat = fs.lstatSync(fs.readlinkSync(filePath));
+        }
+
+        if (stat.isDirectory()) {
+
+          var sort = 0;
+          // ignore directories that has an ignore file under it
+          var ignoreFile = patch_content_dir(_this2.config.content_dir) + shortPath + '/ignore';
+
+          if (fs.existsSync(ignoreFile) && fs.lstatSync(ignoreFile).isFile()) {
+            return true;
+          }
+
+          if (category_sort) {
+            try {
+              var sortFile = fs.readFileSync(patch_content_dir(_this2.config.content_dir) + shortPath + '/sort');
+              sort = parseInt(sortFile.toString('utf-8'), 10);
+            } catch (e) {
+              if (_this2.config.debug) {
+                console.log('No sort file for', patch_content_dir(_this2.config.content_dir) + shortPath);
+              }
+            }
+          }
+
+          filesProcessed.push({
+            slug: shortPath,
+            title: _s.titleize(_s.humanize(path.basename(shortPath))),
+            is_index: false,
+            class: 'category-' + _this2.cleanString(shortPath),
+            sort: sort,
+            files: []
+          });
+        }
+
+        if (stat.isFile() && path.extname(shortPath) === '.md') {
+          try {
+            (function () {
+
+              var file = fs.readFileSync(filePath);
+              var slug = shortPath;
+              var pageSort = 0;
+
+              if (shortPath.indexOf('index.md') > -1) {
+                slug = slug.replace('index.md', '');
+              }
+
+              slug = slug.replace('.md', '').trim();
+
+              var dir = path.dirname(shortPath);
+              var meta = _this2.processMeta(file.toString('utf-8'));
+
+              if (page_sort_meta && meta[page_sort_meta]) {
+                pageSort = parseInt(meta[page_sort_meta], 10);
+              }
+
+              var val = _.find(filesProcessed, function (item) {
+                return item.slug === dir;
+              });
+              val.files.push({
+                slug: slug,
+                title: meta.title ? meta.title : _this2.slugToTitle(slug),
+                active: activePageSlug.trim() === '/' + slug,
+                sort: pageSort
+              });
+            })();
+          } catch (e) {
+            if (_this2.config.debug) {
+              console.log(e);
+            }
+          }
+        }
+      });
+
+      var sortedFiles = _.sortBy(filesProcessed, function (cat) {
+        return cat.sort;
+      });
+      sortedFiles.forEach(function (category) {
+        category.files = _.sortBy(category.files, function (file) {
+          return file.sort;
+        });
+      });
+
+      return sortedFiles;
+    }
+
+    // Index and search contents
+
+  }, {
+    key: 'doSearch',
+    value: function doSearch(query) {
+      var _this3 = this;
+
+      var contentDir = patch_content_dir(path.normalize(this.config.content_dir));
+      var files = glob.sync(contentDir + '**/*.md');
+      var idx = (0, _lunr2.default)(function () {
+        this.field('title', { boost: 10 });
+        this.field('body');
+      });
+
+      files.forEach(function (filePath) {
+        try {
+          var shortPath = filePath.replace(contentDir, '').trim();
+          var file = fs.readFileSync(filePath);
+          var meta = _this3.processMeta(file.toString('utf-8'));
+
+          idx.add({
+            id: shortPath,
+            title: meta.title ? meta.title : _this3.slugToTitle(shortPath),
+            body: file.toString('utf-8')
+          });
+        } catch (e) {
+          if (_this3.config.debug) {
+            console.log(e);
+          }
+        }
+      });
+
+      var results = idx.search(query);
+      var searchResults = [];
+
+      results.forEach(function (result) {
+        var page = _this3.getPage(_this3.config.content_dir + result.ref);
+        page.excerpt = page.excerpt.replace(new RegExp('(' + query + ')', 'gim'), '<span class="search-query">$1</span>');
+        searchResults.push(page);
+      });
+
+      return searchResults;
+    }
+  }]);
+
+  return Lookup;
+}();
+
+exports.default = new Lookup();
+module.exports = exports['default'];

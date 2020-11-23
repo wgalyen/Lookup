@@ -9,7 +9,7 @@
   "main": "lib/lookup.js",
   "scripts": {
     "compile": "babel src --out-dir lib",
-    "lint": "jshint src/ ../../test/",
+    "lint": "jshint src/ test/",
     "prepublish": "npm run compile",
     "test": "npm run lint & npm run compile & mocha"
   },
