@@ -7,7 +7,10 @@
   "keywords": [
     "lookup",
     "knowledgebase",
-    "markdown"
+    "markdown",
+    "static",
+    "site",
+    "generator"
   ],
   "repository": {
     "type": "git",
@@ -21,7 +24,7 @@
     }
   ],
   "bin": "./bin/lookup.js",
-  "main": "./app",
+  "main": "./app/index.js",
   "scripts": {
     "start": "DEBUG=lookup node example/server.js",
     "start_win": "set DEBUG=lookup && node example/server.js",
