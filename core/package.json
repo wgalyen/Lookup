@@ -8,8 +8,8 @@
   ],
   "main": "lib/lookup.js",
   "scripts": {
-    "compile": "babel src --out-dir lib",
-    "lint": "jshint src/ test/",
+    "compile": "../app/lookup-core/node_modules/.bin/babel src --out-dir ../../core/lib",
+    "lint": "jshint src test/",
     "prepublish": "npm run compile",
     "test": "npm run lint & npm run compile & mocha"
   },
