@@ -16,7 +16,7 @@ function create_meta_info(meta_title, meta_description, meta_sort) {
 
     return yaml.safeDump(yamlDocument) + "---\n";
   } else {
-    return "";
+    return '---';
   }
 
 }
