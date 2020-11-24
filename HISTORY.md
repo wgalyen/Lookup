@@ -1,5 +1,49 @@
 # Lookup Changelog
 
+v0.11.0
+==================
+
+  * **[New]** Google OAuth Support
+  * **[New]** Authentication for Edit (Public Read-Only)
+  * **[New]** Dynamic Sitemap.xml
+  * **[New]** Custom Variables
+  * **[Improvement]** Multiple User Login
+  * **[Improvement]** Table of Contents (Dynamic)
+  * **[Misc]** Merged `Lookup-Core` module into repository
+  * **[Misc]** Dependency upgrades
+
+v0.10.1
+====================
+
+  * **[New]** Language Translations!
+    - Right to Left support
+  * **[New]** Docker support
+  * **[Improvement]** Better small-screen layout that automatically hides the left menu
+  * **[Misc]** Upgrading lookup-core from v0.4.0 to v0.5.0
+
+
+v0.10.0
+====================
+
+  * **[New]** Language Translations!
+  * **[New]** Metadata is editable
+  * **[Fixed] General BugFixes contributed by
+
+v0.9.0
+===================
+
+  * **[Fixed]** Embedding images in content
+  * **[Fixed]** Custom homepage via index.md file
+  * **[Fixed]** Sanitizing file paths
+  * **[New]** Authentication on Changes Only
+  * **[New]** Category in Search Results
+  * **[New]** Metadata on homepage
+  * **[Upgraded]** Module lookup-core from v0.2.0 to v0.4.0
+  * **[Upgraded]** Other Dependencies
+  * **[Misc]** Broke up code into multiple files
+  * **[Misc]** Delinted Code
+  * **[Misc]** Overall refactor
+
 v0.8.0
 ===================
 
