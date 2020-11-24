@@ -14,13 +14,13 @@ function route_page_create (config, lookup) {
         });
 
         fs.open(filepath, 'a', function (error, fd) {
-            fs.close(fd);
             if (error) {
                 return res.json({
                     status  : 1,
                     message : error
                 });
             }
+            fs.close(fd);
             res.json({
                 status  : 0,
                 message : config.lang.api.pageCreated
