@@ -14,9 +14,9 @@ function create_meta_info(meta_title, meta_description, meta_sort) {
     if (meta_description) yamlDocument["Description"] = meta_description;
     if (meta_sort) yamlDocument["Sort"] = parseInt(meta_sort);
 
-    return yaml.safeDump(yamlDocument) + "---\n";
+    return '---\n' + yaml.safeDump(yamlDocument) + '---\n';
   } else {
-    return '---\n';
+    return '---\n---\n';
   }
 
 }

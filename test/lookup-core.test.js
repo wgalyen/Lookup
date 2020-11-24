@@ -6,7 +6,7 @@
 var path   = require('path');
 var chai   = require('chai');
 var expect = chai.expect;
-var lookupCoreTest = require('../app/core/lib/lookup.js');
+var lookup = require('../app/core/lib/lookup.js');
 
 chai.should();
 chai.config.truncateThreshold = 0;
@@ -14,23 +14,23 @@ chai.config.truncateThreshold = 0;
 describe('#cleanString()', function () {
 
     it('converts "Hello World" into "hello-world"', function () {
-        lookupCoreTest.cleanString('Hello World').should.equal('hello-world');
+        lookup.cleanString('Hello World').should.equal('hello-world');
     });
 
     it('converts "/some/directory-example/hello/" into "some-directory-example-hello"', function () {
-        lookupCoreTest.cleanString('/some/directory-example/hello/').should.equal('some-directory-example-hello');
+        lookup.cleanString('/some/directory-example/hello/').should.equal('some-directory-example-hello');
     });
 
     it('converts "with trailing space " into "with-trailing-space"', function () {
-        lookupCoreTest.cleanString('with trailing space ').should.equal('with-trailing-space');
+        lookup.cleanString('with trailing space ').should.equal('with-trailing-space');
     });
 
     it('converts "also does underscores" into "also_does_underscores"', function () {
-        lookupCoreTest.cleanString('also does underscores', true).should.equal('also_does_underscores');
+        lookup.cleanString('also does underscores', true).should.equal('also_does_underscores');
     });
 
     it('converts "/some/directory-example/underscores/" into "some_directory_example_underscores"', function () {
-        lookupCoreTest.cleanString('/some/directory-example/underscores/', true).should.equal('some_directory_example_underscores');
+        lookup.cleanString('/some/directory-example/underscores/', true).should.equal('some_directory_example_underscores');
     });
 
 });
@@ -38,11 +38,11 @@ describe('#cleanString()', function () {
 describe('#slugToTitle()', function () {
 
     it('converts "hello-world" into "Hello World"', function () {
-        lookupCoreTest.slugToTitle('hello-world').should.equal('Hello World');
+        lookup.slugToTitle('hello-world').should.equal('Hello World');
     });
 
     it('converts "dir/some-example-file.md" into "Some Example File"', function () {
-        lookupCoreTest.slugToTitle('dir/some-example-file.md').should.equal('Some Example File');
+        lookup.slugToTitle('dir/some-example-file.md').should.equal('Some Example File');
     });
 
 });
@@ -50,7 +50,7 @@ describe('#slugToTitle()', function () {
 describe('#processMeta()', function () {
 
     it('returns array of meta values', function () {
-        var result = lookupCoreTest.processMeta('/*\n'+
+        var result = lookup.processMeta('/*\n'+
             'Title: This is a title\n'+
             'Description: This is a description\n'+
             'Sort: 4\n'+
@@ -63,18 +63,18 @@ describe('#processMeta()', function () {
     });
 
     it('returns an empty array if no meta specified', function () {
-        var result = lookupCoreTest.processMeta('no meta here');
+        var result = lookup.processMeta('no meta here');
         expect(result).to.be.empty;
     });
 
     it('returns proper meta from file starting with a BOM character', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPage(path.join(lookupCoreTest.config.content_dir, 'page-with-bom.md'));
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPage(path.join(lookup.config.content_dir, 'page-with-bom.md'));
         expect(result).to.have.property('title', 'Example Page With BOM');
     });
 
     it('returns array of meta values (YAML)', function () {
-        var result = lookupCoreTest.processMeta('\n'+
+      var result = lookup.processMeta('---\n'+
             'Title: This is a title\n'+
             'Description: This is a description\n'+
             'Sort: 4\n'+
@@ -87,8 +87,8 @@ describe('#processMeta()', function () {
     });
 
     it('returns proper meta from file starting with a BOM character (YAML)', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPage(lookupCoreTest.config.content_dir + 'page-with-bom-yaml.md');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPage(lookup.config.content_dir + 'page-with-bom-yaml.md');
         expect(result).to.have.property('title', 'Example Page With BOM for YAML');
     });
 
@@ -97,7 +97,7 @@ describe('#processMeta()', function () {
 describe('#stripMeta()', function () {
 
     it('strips meta comment block', function () {
-        var result = lookupCoreTest.stripMeta('/*\n'+
+        var result = lookup.stripMeta('/*\n'+
             'Title: This is a title\n'+
             'Description: This is a description\n'+
             'Sort: 4\n'+
@@ -106,32 +106,46 @@ describe('#stripMeta()', function () {
         result.should.equal('This is the content');
     });
 
+    it('strips yaml meta comment block with horizontal rule in content', function() {
+      var result = lookup.stripMeta('---\n'+
+        'Title: + This is a title\n'+
+        '---\n'+
+        'This is the content\n---');
+      result.should.equal('This is the content\n---');
+    });
+
     it('leaves content if no meta comment block', function () {
-        var result = lookupCoreTest.stripMeta('This is the content');
+        var result = lookup.stripMeta('This is the content');
         result.should.equal('This is the content');
     });
 
-    it('only strips the first comment block', function () {
-        var result = lookupCoreTest.stripMeta('/*\n'+
-            'Title: This is a title\n'+
-            'Description: This is a description\n'+
-            'Sort: 4\n'+
-            'Multi word: Value\n'+
-            '*/\nThis is the content/*\n'+
-            'Title: This is a title\n'+
-            '*/');
-        result.should.equal('This is the content/*\n'+
-            'Title: This is a title\n'+
-            '*/');
+    it('leaves content with horizontal rule if no meta comment block', function () {
+      var result = lookup.stripMeta('This is the content\n---');
+      result.should.equal('This is the content\n---');
     });
+
+
+    it('only strips the first comment block', function () {
+          var result = lookup.stripMeta('/*\n'+
+              'Title: This is a title\n'+
+              'Description: This is a description\n'+
+              'Sort: 4\n'+
+              'Multi word: Value\n'+
+              '*/\nThis is the content/*\n'+
+              'Title: This is a title\n'+
+              '*/');
+          result.should.equal('This is the content/*\n'+
+              'Title: This is a title\n'+
+              '*/');
+      });
 
 });
 
 describe('#processVars()', function () {
 
     it('replaces config vars in Markdown content', function () {
-        lookupCoreTest.config.base_url = '/base/url';
-        lookupCoreTest.processVars('This is some Markdown with a %base_url%.')
+        lookup.config.base_url = '/base/url';
+        lookup.processVars('This is some Markdown with a %base_url%.')
             .should.equal('This is some Markdown with a /base/url.');
     });
 
@@ -140,8 +154,8 @@ describe('#processVars()', function () {
 describe('#getPage()', function () {
 
     it('returns an array of values for a given page', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPage(lookupCoreTest.config.content_dir + 'example-page.md');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPage(lookup.config.content_dir + 'example-page.md');
         expect(result).to.have.property('slug', 'example-page');
         expect(result).to.have.property('title', 'Example Page');
         expect(result).to.have.property('body');
@@ -149,8 +163,8 @@ describe('#getPage()', function () {
     });
 
     it('returns null if no page found', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPage(lookupCoreTest.config.content_dir + 'nonexistent-page.md');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPage(lookup.config.content_dir + 'nonexistent-page.md');
         expect(result).to.be.null;
     });
 
@@ -161,8 +175,8 @@ describe('#getPage()', function () {
           content: 'Test Variable'
         }
       ];
-      lookupCoreTest.config.variables = variables;
-      lookupCoreTest.processVars('This is some Markdown with a %test_variable%.')
+      lookup.config.variables = variables;
+      lookup.processVars('This is some Markdown with a %test_variable%.')
         .should.equal('This is some Markdown with a Test Variable.');
     });
 
@@ -171,8 +185,8 @@ describe('#getPage()', function () {
 describe('#getPages()', function () {
 
     it('returns an array of categories and pages', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPages();
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPages();
         expect(result[0]).to.have.property('is_index', true);
         expect(result[0].files[0]).to.have.property('title', 'Example Page');
         expect(result[1]).to.have.property('slug', 'sub');
@@ -180,8 +194,8 @@ describe('#getPages()', function () {
     });
 
     it('marks activePageSlug as active', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.getPages('/example-page');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.getPages('/example-page');
         expect(result[0].files[0]).to.have.property('active', true);
         expect(result[1].files[0]).to.have.property('active', false);
     });
@@ -191,14 +205,14 @@ describe('#getPages()', function () {
 describe('#doSearch()', function () {
 
     it('returns an array of search results', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.doSearch('example');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.doSearch('example');
         expect(result).to.have.length(4);
     });
 
     it('returns an empty array if nothing found', function () {
-        lookupCoreTest.config.content_dir = path.join(__dirname, 'content/');
-        var result = lookupCoreTest.doSearch('asdasdasd');
+        lookup.config.content_dir = path.join(__dirname, 'content/');
+        var result = lookup.doSearch('asdasdasd');
         expect(result).to.be.empty;
     });
 

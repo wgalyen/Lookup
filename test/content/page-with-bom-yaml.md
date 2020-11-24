@@ -1,3 +1,4 @@
+---
 Title: Example Page With BOM for YAML
 Sort: 3
 Modified: 2020-11-24T15:43:00-0500
