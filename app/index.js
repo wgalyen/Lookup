@@ -12,7 +12,7 @@ var moment        = require('moment');
 var extend        = require('extend');
 var hogan         = require('hogan-express');
 var session       = require('express-session');
-var lookup        = require('../core/lib/lookup.js');
+var lookup        = require('./core/lib/lookup.js');
 var passport      = require('passport');
 
 function initialize (config) {

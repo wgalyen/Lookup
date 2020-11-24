@@ -6,7 +6,7 @@
 var path   = require('path');
 var chai   = require('chai');
 var expect = chai.expect;
-var lookupCoreTest = require('../core/lib/lookup.js');
+var lookupCoreTest = require('../app/core/lib/lookup.js');
 
 chai.should();
 chai.config.truncateThreshold = 0;
@@ -161,8 +161,8 @@ describe('#getPage()', function () {
           content: 'Test Variable'
         }
       ];
-      lookup.config.variables = variables;
-      lookup.processVars('This is some Markdown with a %test_variable%.')
+      lookupCoreTest.config.variables = variables;
+      lookupCoreTest.processVars('This is some Markdown with a %test_variable%.')
         .should.equal('This is some Markdown with a Test Variable.');
     });
 
