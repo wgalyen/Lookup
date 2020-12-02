@@ -3,10 +3,17 @@ Lookup
 
 Lookup is a free, open, simple Markdown powered Knowledgebase for Nodejs. [Find out more &rarr;](http://github.io/wgalyen/lookup/what-is-lookup)
 
-Requirements
+Quickstart
 ------------
 
-* [Node.js](http://nodejs.org) **v4.0.0** (or later)
+Run this in a terminal and then visit [http://localhost:3000](http://localhost:3000).
+For full Installation instructions, see the [Installation Guide](http://github.io/wgalyen/lookup/install/installing-raneto).
+`git clone https://github.com/wgalyen/Lookup.git && cd Lookup && npm install && npm start`
+
+Supported Node Versions:
+- v4.x
+- v6.x
+- v7.x
 
 Demo & Docs
 -----------
