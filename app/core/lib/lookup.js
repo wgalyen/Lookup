@@ -139,7 +139,6 @@ var Lookup = function () {
       var metas = void 0;
 
       var yamlObject = void 0;
-      var yamlField = void 0;
 
       switch (true) {
         case _metaRegex.test(markdownContent):
