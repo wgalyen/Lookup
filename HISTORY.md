@@ -1,5 +1,18 @@
 # Lookup Changelog
 
+v0.13.0
+==================
+
+  * **[New]** Nested Pages
+  * **[New]** Manual Category Title
+  * **[New]** Last Edited Metadata Header
+  * **[New]** Require Authentication for Viewing
+  * **[Improvement]** Meta Data RegEx Refinement
+  * **[Improvement]** Unix Sitemap Generation
+  * **[Improvement]** Display All Files Fix
+  * **[Misc]** Code Refinements
+  * **[Misc]** Dependency upgrades
+
 v0.11.0
 ==================
 
