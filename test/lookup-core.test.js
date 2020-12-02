@@ -200,6 +200,51 @@ describe('#getPages()', function () {
         expect(result[1].files[0]).to.have.property('active', false);
     });
 
+  it('adds show_on_home property to directory', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    var result = lookup.getPages();
+    expect(result[0]).to.have.property('show_on_home', true);
+  });
+
+  it('adds show_on_home property to files', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    var result = lookup.getPages();
+    expect(result[0].files[0]).to.have.property('show_on_home', true);
+  });
+
+  it('loads meta show_on_home value from directory', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    var result = lookup.getPages();
+    expect(result[3]).to.have.property('show_on_home', false);
+  });
+
+  it('loads meta show_on_home value from file', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    var result = lookup.getPages();
+    expect(result[0].files[3]).to.have.property('show_on_home', false);
+  });
+
+  it('applies show_on_home_default in absence of meta for directories', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    lookup.config.show_on_home_default = false;
+    var result = lookup.getPages();
+    expect(result[1]).to.have.property('show_on_home', false);
+  });
+
+  it('applies show_on_home_default in absence of meta for files', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    lookup.config.show_on_home_default = false;
+    var result = lookup.getPages();
+    expect(result[1].files[0]).to.have.property('show_on_home', false);
+  });
+
+  it('category index always shows on home', function () {
+    lookup.config.content_dir = path.join(__dirname, 'content/');
+    lookup.config.show_on_home_default = false;
+    var result = lookup.getPages();
+    expect(result[0]).to.have.property('show_on_home', true);
+  });
+
 });
 
 describe('#doSearch()', function () {
