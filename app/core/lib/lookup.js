@@ -305,6 +305,7 @@ var Lookup = function () {
             slug: shortPath,
             title: dirMetadata.title || _s.titleize(_s.humanize(path.basename(shortPath))),
             is_index: false,
+            is_directory: true,
             class: 'category-' + _this2.cleanString(shortPath),
             sort: dirMetadata.sort || sort,
             files: []
@@ -337,6 +338,7 @@ var Lookup = function () {
             val.files.push({
               slug: slug,
               title: meta.title ? meta.title : _this2.slugToTitle(slug),
+              is_directory: false,
               active: activePageSlug.trim() === '/' + slug,
               sort: pageSort
             });
