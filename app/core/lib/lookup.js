@@ -109,7 +109,7 @@ var Lookup = function () {
     key: 'cleanObjectStrings',
     value: function cleanObjectStrings(obj) {
       var cleanObj = {};
-      for (field in obj) {
+      for (var field in obj) {
         if (obj.hasOwnProperty(field)) {
           cleanObj[this.cleanString(field, true)] = ('' + obj[field]).trim();
         }
@@ -160,7 +160,6 @@ var Lookup = function () {
         case _metaRegexYaml.test(markdownContent):
           metaArr = markdownContent.match(_metaRegexYaml);
           metaString = metaArr ? metaArr[1].trim() : '';
-
           yamlObject = yaml.safeLoad(metaString);
           meta = this.cleanObjectStrings(yamlObject);
           break;
@@ -284,7 +283,7 @@ var Lookup = function () {
           var dirMetadata = {};
           try {
             var metaFile = fs.readFileSync(patch_content_dir(_this2.config.content_dir) + shortPath + '/meta');
-            dirMetadata = _this2.cleanObjectStrings(yaml.safeLoad(_this2.processMeta(metaFile.toString('utf-8'))));
+            dirMetadata = _this2.cleanObjectStrings(yaml.safeLoad(metaFile.toString('utf-8')));
           } catch (e) {
             if (_this2.config.debug) {
               console.log('No meta file for', patch_content_dir(_this2.config.content_dir) + shortPath);
