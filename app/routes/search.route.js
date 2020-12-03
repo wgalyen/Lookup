@@ -18,7 +18,7 @@ function route_search (config, lookup) {
         var invalidChars   = '&\'"/';
         var sanitizedQuery = validator.blacklist(tagFreeQuery, invalidChars);
 
-        // trim and
+        // trim and and convert string
         var searchQuery    = validator.toString(sanitizedQuery).trim();
 
         var searchResults  = lookup.doSearch(searchQuery);
