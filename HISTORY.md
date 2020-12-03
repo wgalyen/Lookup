@@ -1,5 +1,21 @@
 # Lookup Changelog
 
+v0.14.0
+====================
+
+  * **[New]** Language Translations!
+    - Spanish
+  * **[New]** Multi-level Page Nesting
+  * **[New]** Marking Active Category in UI
+  * **[New]** Export of Lookup class
+  * **[Improvement]** Search with Special Characters
+  * **[Improvement]** Upgrade to SweetAlert2
+  * **[Misc]** Remove Babel
+  * **[Misc]** Move from JSHint to ESLint
+  * **[Misc]** Code Refinements
+  * **[Misc]** Document Refinements
+  * **[Misc]** Dependency upgrades
+
 v0.13.0
 ==================
 
