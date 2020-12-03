@@ -1,7 +1,5 @@
 'use strict';
 
-/*jshint expr: true*/
-
 // Modules
 var fs                 = require('fs');
 var path               = require('path');

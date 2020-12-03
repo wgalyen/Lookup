@@ -1,7 +1,5 @@
 'use strict';
 
-/*jshint expr: true*/
-
 // Modules
 var path = require('path');
 var chai = require('chai');
