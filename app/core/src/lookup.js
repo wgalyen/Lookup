@@ -1,11 +1,13 @@
-import * as path    from 'path';
-import * as fs      from 'fs';
-import * as glob    from 'glob';
-import * as _       from 'underscore';
-import * as _s      from 'underscore.string';
-import marked       from 'marked';
-import lunr         from 'lunr';
-import * as yaml    from 'js-yaml';
+'use strict';
+
+const path = require('path');
+const fs = require('fs');
+const glob = require('glob');
+const _ = require('underscore');
+const _s = require('underscore.string');
+const marked = require('marked');
+const lunr = require('lunr');
+const yaml = require('js-yaml');
 
 const default_config = {
   // The base URL of your site (allows you to use %base_url% in Markdown files)
@@ -325,4 +327,5 @@ class Lookup {
   }
 }
 
-export default new Lookup();
+exports.default = new Lookup();
+module.exports = exports['default']
