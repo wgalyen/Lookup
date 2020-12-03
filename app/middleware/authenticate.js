@@ -10,7 +10,6 @@ function middleware_authenticate(config) {
         } else {
           res.redirect(403, '/login');
         }
-        return;
       }
       return next();
     };

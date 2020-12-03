@@ -10,10 +10,8 @@ function middleware_authenticate_read_access (config) {
           req.path === '/login') {
           return next();
         } else {
-          res.redirect(403, '/login');
-          return;
+          return res.redirect(403, '/login');
         }
-        return next();
       } else {
         return next();
       }

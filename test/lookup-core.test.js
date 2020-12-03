@@ -64,6 +64,7 @@ describe('#processMeta()', function () {
 
   it('returns an empty array if no meta specified', function () {
     var result = lookup.processMeta('no meta here');
+    /* eslint-disable no-unused-expressions */
     expect(result).to.be.empty;
   });
 
@@ -144,8 +145,24 @@ describe('#processVars()', function () {
 
   it('replaces config vars in Markdown content', function () {
     lookup.config.base_url = '/base/url';
-    lookup.processVars('This is some Markdown with a %base_url%.')
+    lookup
+      .processVars('This is some Markdown with a %base_url%.')
       .should.equal('This is some Markdown with a /base/url.');
+  });
+
+  it('replaces custom vars in Markdown content', function () {
+    var variables = [
+      {
+        name: 'test_variable',
+        content: 'Test Variable'
+      }
+    ];
+    lookup.config.variables = variables;
+    lookup.processVars('This is some Markdown with a %test_variable%.')
+      .should.equal('This is some Markdown with a Test Variable.');
+    lookup
+      .processVars('This is some Markdown with a %test_variable%.')
+      .should.equal('This is some Markdown with a Test Variable.');
   });
 
 });
@@ -164,6 +181,7 @@ describe('#getPage()', function () {
   it('returns null if no page found', function () {
     lookup.config.content_dir = path.join(__dirname, 'content/');
     var result = lookup.getPage(lookup.config.content_dir + 'nonexistent-page.md');
+    /* eslint-disable no-unused-expressions */
     expect(result).to.be.null;
   });
 
@@ -243,6 +261,7 @@ describe('#getPages()', function () {
     lookup.config.content_dir = path.join(__dirname, 'content/');
     lookup.config.show_on_home_default = false;
     var result = lookup.getPages();
+    /* eslint-disable no-unused-expressions */
     expect(result[0]).to.have.property('show_on_home', true);
   });
 
