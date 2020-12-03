@@ -327,5 +327,5 @@ class Lookup {
   }
 }
 
-exports.default = new Lookup();
+exports.default = Lookup;
 module.exports = exports['default']

@@ -12,10 +12,11 @@ var moment        = require('moment');
 var extend        = require('extend');
 var hogan         = require('hogan-express');
 var session       = require('express-session');
-var lookup        = require('./core/lookup.js');
+var Lookup        = require('./core/lookup.js');
 var passport      = require('passport');
 
 function initialize (config) {
+  const lookup = new Lookup();
 
   // Load Translations
   if (!config.locale) { config.locale = 'en'; }
