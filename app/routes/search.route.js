@@ -11,7 +11,16 @@ function route_search (config, lookup) {
         // Skip if Search not present
         if (!req.query.search) { return next(); }
 
-        var searchQuery    = validator.toString(validator.escape(_s.stripTags(req.query.search))).trim();
+        // remove < and >
+        var tagFreeQuery   = _s.stripTags(req.query.search);
+
+        // remove /, ', " and & from query
+        var invalidChars   = '&\'"/';
+        var sanitizedQuery = validator.blacklist(tagFreeQuery, invalidChars);
+
+        // trim and
+        var searchQuery    = validator.toString(sanitizedQuery).trim();
+
         var searchResults  = lookup.doSearch(searchQuery);
         var pageListSearch = remove_image_content_directory(config, lookup.getPages(''));
 
