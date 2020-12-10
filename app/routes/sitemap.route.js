@@ -10,7 +10,8 @@ const utils = require('../core/utils');
 
 function route_sitemap (config) {
   return function (req, res, next) {
-    var hostname = req.headers.host;
+
+    var hostname = config.hostname || req.headers.host;
     var content_dir = path.normalize(config.content_dir);
 
     // get list md files
@@ -39,7 +40,7 @@ function route_sitemap (config) {
       // Need to override the datetime format for sitemap
       var conf = {datetime_format: 'YYYY-MM-DD'};
       sitemap.add({
-        url: urls[i],
+        url: (config.prefix_url || '') + urls[i],
         changefreq: 'weekly',
         priority: 0.8,
         lastmod: utils.getLastModified(conf, contentProcessors.processMeta(content), files[i])
