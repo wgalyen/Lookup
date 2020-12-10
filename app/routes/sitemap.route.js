@@ -6,6 +6,7 @@ var fs                = require('fs');
 var sm                = require('sitemap');
 var _                 = require('underscore');
 var get_last_modified = require('../functions/get_last_modified.js');
+const contentProcessors = require('../functions/contentProcessors');
 
 function route_sitemap (config, lookup) {
   return function (req, res, next) {
@@ -41,7 +42,7 @@ function route_sitemap (config, lookup) {
         url: urls[i],
         changefreq: 'weekly',
         priority: 0.8,
-        lastmod: get_last_modified(conf, lookup.processMeta(content), files[i])
+        lastmod: get_last_modified(conf, contentProcessors.processMeta(content), files[i])
       });
     }
 

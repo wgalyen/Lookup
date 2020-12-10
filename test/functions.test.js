@@ -9,6 +9,7 @@ var moment             = require('moment');
 var Lookup             = require('../app/core/lookup.js');
 var build_nested_pages = require('../app/functions/build_nested_pages.js');
 var get_last_modified  = require('../app/functions/get_last_modified.js');
+const contentProcessors = require('../app/functions/contentProcessors');
 
 const lookup = new Lookup();
 
@@ -21,7 +22,7 @@ describe('#get_last_modified()', function () {
     lookup.config.datetime_format = 'Do MMM YYYY';
     var file_path = path.join(__dirname, 'content/page-with-bom-yaml.md');
     var content = fs.readFileSync(file_path, 'utf8');
-    var modified = get_last_modified(lookup.config, lookup.processMeta(content), file_path);
+    var modified = get_last_modified(lookup.config, contentProcessors.processMeta(content), file_path);
     expect(modified).to.be.equal('24th Nov 2020');
   });
 
@@ -29,7 +30,7 @@ describe('#get_last_modified()', function () {
     lookup.config.datetime_format = 'Do MMM YYYY';
     var file_path = path.join(__dirname, 'content/example-page.md');
     var content = fs.readFileSync(file_path, 'utf8');
-    var modified = get_last_modified(lookup.config, lookup.processMeta(content), file_path);
+    var modified = get_last_modified(lookup.config, contentProcessors.processMeta(content), file_path);
     var fstime = moment(fs.lstatSync(file_path).mtime).format(lookup.config.datetime_format);
     expect(modified).to.be.equal(fstime);
   });
