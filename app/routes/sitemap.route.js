@@ -8,10 +8,10 @@ var _                 = require('underscore');
 var get_last_modified = require('../functions/get_last_modified.js');
 const contentProcessors = require('../functions/contentProcessors');
 
-function route_sitemap (config, lookup) {
+function route_sitemap (config) {
   return function (req, res, next) {
     var hostname = req.headers.host;
-    var content_dir = path.normalize(lookup.config.content_dir);
+    var content_dir = path.normalize(config.content_dir);
 
     // get list md files
     var files = listFiles(content_dir);

@@ -11,12 +11,12 @@ var remove_image_content_directory = require('../functions/remove_image_content_
 
 const contentsHandler = require('../core/contents');
 
-function route_home (config, lookup) {
+function route_home (config) {
     return function (req, res, next) {
 
         // Generate Filepath
         var filepath = get_filepath({
-            content  : lookup.config.content_dir,
+            content  : config.content_dir,
             filename : 'index'
         });
 

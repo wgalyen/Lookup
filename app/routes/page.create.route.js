@@ -4,11 +4,11 @@
 var fs           = require('fs');
 var get_filepath = require('../functions/get_filepath.js');
 
-function route_page_create (config, lookup) {
+function route_page_create (config) {
     return function (req, res, next) {
 
         var filepath = get_filepath({
-            content  : lookup.config.content_dir,
+            content  : config.content_dir,
             category : req.body.category,
             filename : req.body.name + '.md'
         });

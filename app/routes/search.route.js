@@ -8,7 +8,7 @@ var remove_image_content_directory = require('../functions/remove_image_content_
 const searchHandler = require('../core/search');
 const contentsHandler = require('../core/contents');
 
-function route_search (config, lookup) {
+function route_search (config) {
     return function (req, res, next) {
 
         // Skip if Search not present
