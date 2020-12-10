@@ -5,6 +5,8 @@ var validator                      = require('validator');
 var _s                             = require('underscore.string');
 var remove_image_content_directory = require('../functions/remove_image_content_directory.js');
 
+const searchHandler = require('../core/search');
+
 function route_search (config, lookup) {
     return function (req, res, next) {
 
@@ -21,7 +23,7 @@ function route_search (config, lookup) {
         // trim and and convert string
         var searchQuery    = validator.toString(sanitizedQuery).trim();
 
-        var searchResults  = lookup.doSearch(searchQuery);
+        var searchResults  = searchHandler(searchQuery, config);
         var pageListSearch = remove_image_content_directory(config, lookup.getPages(''));
 
         // TODO: Move to Lookup Core
