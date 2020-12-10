@@ -8,7 +8,7 @@ Quickstart
 
 Run this in a terminal and then visit [http://localhost:3000](http://localhost:3000).
 For full Installation instructions, see the [Installation Guide](http://github.io/wgalyen/lookup/install/installing-lookup).
-`git clone https://github.com/wgalyen/Lookup.git && cd Lookup && npm install && npm start`
+`git clone https://github.com/wgalyen/Lookup.git && cd Lookup && npm install && npm run gulp && npm start`
 
 Supported Node Versions:
 - v4.x
