@@ -3,7 +3,7 @@
 
 // Modules
 var path                           = require('path');
-var fs                             = require('fs');
+var fs                             = require('fs-extra');
 var build_nested_pages             = require('../functions/build_nested_pages.js');
 var marked                         = require('marked');
 var toc                            = require('markdown-toc');
@@ -14,7 +14,7 @@ const contentsHandler = require('../core/contents');
 const utils = require('../core/utils');
 
 function route_wildcard (config) {
-    return function (req, res, next) {
+  return async function (req, res, next) {
 
         // Skip if nothing matched the wildcard Regex
         if (!req.params[0]) { return next(); }
@@ -23,24 +23,24 @@ function route_wildcard (config) {
         var slug   = req.params[0];
         if (slug === '/') { slug = '/index'; }
 
-        // Normalize and strip trailing slash
-        var file_path      = path.normalize(config.content_dir + slug).replace(/\/$|\\$/g, '');
-        var file_path_orig = file_path;
+    var file_path      = path.normalize(config.content_dir + slug);
+    var file_path_orig = file_path;
 
         // Remove "/edit" suffix
         if (file_path.indexOf(suffix, file_path.length - suffix.length) !== -1) {
             file_path = file_path.slice(0, - suffix.length - 1);
         }
 
-        if (!fs.existsSync(file_path)) { file_path += '.md'; }
+    if (!(await fs.pathExists(file_path))) { file_path += '.md'; }
 
-        fs.readFile(file_path, 'utf8', function (error, content) {
-
-            if (error) {
-                error.status = '404';
-                error.message = config.lang.error['404'];
-                return next(error);
-            }
+    let content;
+    try {
+      content = await fs.readFile(file_path, 'utf8');
+    } catch (error) {
+      error.status = '404';
+      error.message = config.lang.error['404'];
+      return next(error);
+    }
 
             // Process Markdown files
             if (path.extname(file_path) === '.md') {
@@ -52,7 +52,7 @@ function route_wildcard (config) {
 
                 // Content
                 content = contentProcessors.stripMeta(content);
-                content = contentProcessors.processVars(content);
+      content = contentProcessors.processVars(content, config);
 
                 var template = meta.template || 'page';
                 var render   = template;
@@ -66,7 +66,6 @@ function route_wildcard (config) {
                         return;
                     }
                     render  = 'edit';
-                    content = content;
 
                 } else {
 
@@ -86,7 +85,7 @@ function route_wildcard (config) {
 
                 }
 
-                var pageList = remove_image_content_directory(config, contentsHandler(slug, config));
+      var pageList = remove_image_content_directory(config, await contentsHandler(slug, config));
 
                 var loggedIn = ((config.authentication || config.authentication_for_edit) ? req.session.loggedIn : false);
 
@@ -103,18 +102,15 @@ function route_wildcard (config) {
                     meta          : meta,
                     content       : content,
                     body_class    : template + '-' + contentProcessors.cleanString(slug),
-                    last_modified : utils.getLastModified(config, meta, file_path),
+        last_modified : await utils.getLastModified(config, meta, file_path),
                     lang          : config.lang,
                     loggedIn      : loggedIn,
                     username      : (config.authentication ? req.session.username : null),
                     canEdit       : canEdit
                 });
 
-            }
-
-        });
-
-    };
+    }
+  };
 }
 
 // Exports

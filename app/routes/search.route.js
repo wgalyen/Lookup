@@ -9,7 +9,7 @@ const searchHandler = require('../core/search');
 const contentsHandler = require('../core/contents');
 
 function route_search (config) {
-    return function (req, res, next) {
+  return async function (req, res, next) {
 
         // Skip if Search not present
         if (!req.query.search) { return next(); }
@@ -24,8 +24,8 @@ function route_search (config) {
         // trim and and convert string
         var searchQuery    = validator.toString(sanitizedQuery).trim();
 
-        var searchResults  = searchHandler(searchQuery, config);
-        var pageListSearch = remove_image_content_directory(config, contentsHandler(null, config));
+    var searchResults  = await searchHandler(searchQuery, config);
+    var pageListSearch = remove_image_content_directory(config, await contentsHandler(null, config));
 
         // TODO: Move to Lookup Core
         // Loop through Results and Extract Category
@@ -37,17 +37,16 @@ function route_search (config) {
             }
         });
 
-        return res.render('search', {
-            config        : config,
-            pages         : pageListSearch,
-            search        : searchQuery,
-            searchResults : searchResults,
-            body_class    : 'page-search',
-            lang          : config.lang,
-            loggedIn      : ((config.authentication || config.authentication_for_edit) ? req.session.loggedIn : false),
-            username      : (config.authentication ? req.session.username : null)
-
-        });
+    return res.render('search', {
+      config        : config,
+      pages         : pageListSearch,
+      search        : searchQuery,
+      searchResults : searchResults,
+      body_class    : 'page-search',
+      lang          : config.lang,
+      loggedIn      : ((config.authentication || config.authentication_for_edit) ? req.session.loggedIn : false),
+      username      : ((config.authentication || config.authentication_for_edit) ? req.session.username : null)
+    });
 
     };
 }

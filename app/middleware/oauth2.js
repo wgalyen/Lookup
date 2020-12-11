@@ -14,7 +14,6 @@
 'use strict';
 
 var express = require('express');
-var debug = require('debug')('lookup');
 
 // [START setup]
 var passport = require('passport');
@@ -76,7 +75,7 @@ function router(config) {
     clientID: config.oauth2.client_id,
     clientSecret: config.oauth2.client_secret,
     callbackURL: config.oauth2.callback,
-    accessType: 'offline',
+    accessType: 'offline'
 
   }, function (accessToken, refreshToken, profile, cb) {
     // Extract the minimal profile information we need from the profile object

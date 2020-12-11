@@ -1,10 +1,10 @@
+
 'use strict';
 
-const path = require('path');
-const glob = require('glob');
+const path              = require('path');
 const contentProcessors = require('../functions/contentProcessors');
-const utils = require('./utils');
-const pageHandler = require('./page');
+const utils             = require('./utils');
+const pageHandler       = require('./page');
 
 let instance = null;
 let stemmers = null;
@@ -20,6 +20,7 @@ function getLunr (config) {
   }
   return instance;
 }
+
 function getStemmers (config) {
   if (stemmers === null) {
     const languages = ['en'].concat(config.searchExtraLanguages);
@@ -28,13 +29,15 @@ function getStemmers (config) {
   return stemmers;
 }
 
-function handler (query, config) {
+async function handler (query, config) {
   const contentDir = utils.normalizeDir(path.normalize(config.content_dir));
-  const documents = glob
-    .sync(contentDir + '**/*.md')
-    .map(filePath => contentProcessors.extractDocument(
+  const rawDocuments = await utils.promiseGlob(contentDir + '**/*.md');
+  const potentialDocuments = await Promise.all(
+    rawDocuments.map(filePath => contentProcessors.extractDocument(
       contentDir, filePath, config.debug
     ))
+  );
+  const documents = potentialDocuments
     .filter(doc => doc !== null);
 
   const lunrInstance = getLunr(config);
@@ -46,16 +49,20 @@ function handler (query, config) {
     documents.forEach((doc) => this.add(doc), this);
   });
 
-  const results       = idx.search(query);
-  const searchResults = [];
+  const results = idx.search(query);
 
-  results.forEach(result => {
-    const p = pageHandler(contentDir + result.ref, config);
-    p.excerpt = p.excerpt.replace(new RegExp('(' + query + ')', 'gim'), '<span class="search-query">$1</span>');
-    searchResults.push(p);
-  });
+  const searchResults = await Promise.all(
+    results.map(result => processSearchResult(contentDir, config, query, result))
+  );
 
   return searchResults;
+}
+
+async function processSearchResult (contentDir, config, query, result) {
+  const page = await pageHandler(contentDir + result.ref, config);
+  page.excerpt = page.excerpt.replace(new RegExp('(' + query + ')', 'gim'), '<span class="search-query">$1</span>');
+
+  return page;
 }
 
 exports.default = handler;
