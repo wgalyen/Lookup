@@ -3,6 +3,8 @@ jQuery(document).ready(function () {
 
     'use strict';
 
+    var base_url = (typeof lk_base_url === "undefined") ? "" : lk_base_url;
+
     // Form validation
     $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea')
         .on('focus', function () {
@@ -23,7 +25,7 @@ jQuery(document).ready(function () {
             });
 
             if ($('.input-error').length === 0) {
-              $.post(lk_base_url() + '/lk-login', $(this).serialize(), function (data) {
+              $.post(base_url + '/lk-login', $(this).serialize(), function (data) {
 
                     swal({
                         type              : data.status ? 'success' : 'warning',
@@ -34,7 +36,7 @@ jQuery(document).ready(function () {
 
                     if (data.status) {
                         window.setTimeout(function () {
-                          window.location = lk_base_url() + '/';
+                          window.location = base_url + '/';
                         }, 1500);
                     }
 
