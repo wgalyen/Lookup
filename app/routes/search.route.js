@@ -22,7 +22,7 @@ function route_search (config) {
         var sanitizedQuery = validator.blacklist(tagFreeQuery, invalidChars);
 
         // trim and and convert string
-        var searchQuery    = validator.toString(sanitizedQuery).trim();
+        var searchQuery    = sanitizedQuery.toString(sanitizedQuery).trim();
 
     var searchResults  = await searchHandler(searchQuery, config);
     var pageListSearch = remove_image_content_directory(config, await contentsHandler(null, config));
