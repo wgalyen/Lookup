@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "lookup": "github:wgalyen/lookup",
-    "debug": "3.1.0"
+    "debug": "4.1.1"
   }
 }
