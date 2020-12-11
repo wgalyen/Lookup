@@ -120,6 +120,7 @@ var config = {
     menu_on_pages: true,
     menu_on_page_collapsible: true
 };
+
 config.public_dir = __dirname + '/../themes/' + config.theme_name + '/public/';
 
 // Exports
