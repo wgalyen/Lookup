@@ -62,9 +62,12 @@
 
         // Modal: Delete Page Confirm
         $("#delete-page-confirm").click(function () {
+            var file_arr = window.location.pathname.split("/");
+            var base_arr = lk_base_url().split("/");
+            file_arr.splice(0, base_arr.length, "");
             $("#deleteModal").modal("hide");
             $.post(lk_base_url() + "/lk-delete", {
-                file : decodeURI(window.location.pathname)
+                file : decodeURI(file_arr.join("/"))
             }, function (data) {
                 switch (data.status) {
                     case 0:
