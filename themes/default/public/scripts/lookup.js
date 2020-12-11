@@ -39,7 +39,7 @@
         $("#add-page-confirm").click(function () {
             $("#addModal").modal("hide");
             var name = $("#page-name").val().replace(/\s+/g, "-");
-            $.post("/lk-add-page", {
+            $.post(lk_base_url() + "/lk-add-page", {
                 name     : name,
                 category : current_category
             }, function (data) {
@@ -52,27 +52,27 @@
                         }
                         redirect.push(name);
                         redirect.push("edit");
-                        window.location = redirect.join("/");
+                      window.location = redirect.join(lk_base_url() + "/");
                         break;
                 }
             }).fail(function(data) {
-                if (data.status === 403) { window.location = "/login"; }
+              if (data.status === 403) { window.location = lk_base_url() + "/login"; }
             });
         });
 
         // Modal: Delete Page Confirm
         $("#delete-page-confirm").click(function () {
             $("#deleteModal").modal("hide");
-            $.post("/lk-delete", {
+            $.post(lk_base_url() + "/lk-delete", {
                 file : decodeURI(window.location.pathname)
             }, function (data) {
                 switch (data.status) {
                     case 0:
-                        window.location = "/";
+                        window.location = lk_base_url() + "/";
                         break;
                 }
             }).fail(function(data) {
-                if (data.status === 403) { window.location = "/login"; }
+                if (data.status === 403) { window.location = lk_base_url() + "/login"; }
             });
         });
 
@@ -93,7 +93,7 @@
         // New Category
         $("#newCategory").keypress(function (e) {
             if (e.which === 13) {
-                $.post("/lk-add-category", {
+                $.post(lk_base_url() + "/lk-add-category", {
                     category : $(this).val()
                         .trim()
                         .toLowerCase()
@@ -115,14 +115,16 @@
         });
 
         // get translations first, then register save handlers
-        $.getJSON("/translations/" + $("html").prop("lang") + ".json", null, function (lang) {
+        $.getJSON(lk_base_url() + "/translations/" + $("html").prop("lang") + ".json", null, function (lang) {
 
             // Save Page
             $(".save-page").click(function () {
                 var file_arr = window.location.pathname.split("/");
+                var base_arr = lk_base_url().split("/");
+                file_arr.splice(0, base_arr.length, "");
                 file_arr.pop();
                 $("#entry-markdown").next(".CodeMirror")[0].CodeMirror.save();
-                $.post("/lk-edit", {
+                $.post(lk_base_url() + "/lk-edit", {
                     file    : decodeURI(file_arr.join("/")),
                     content : $("#entry-markdown").val(),
                     meta_title : $("#entry-metainfo-title").val(),
@@ -148,7 +150,7 @@
                             break;
                     }
                 }).fail(function(data) {
-                    if (data.status === 403) { window.location = "/login"; }
+                    if (data.status === 403) { window.location = lk_base_url() + "/login"; }
                 });
             });
 

@@ -29,7 +29,8 @@ function initialize (config) {
   var authenticate_read_access  = require ('./middleware/authenticate_read_access.js')  (config);
   var error_handler             = require('./middleware/error_handler.js')              (config);
   var oauth2                    = require('./middleware/oauth2.js');
-  var route_login               = require('./routes/login.route.js')                    (config);
+  var route_logout              = require('./routes/logout.route.js')
+    (config);
   var route_login_page          = require('./routes/login_page.route.js')               (config);
   var route_logout              = require('./routes/logout.route.js');
   var route_page_edit           = require('./routes/page.edit.route.js')                (config);
