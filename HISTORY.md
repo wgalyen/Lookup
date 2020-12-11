@@ -1,5 +1,14 @@
 # Lookup Changelog
 
+v0.15.0
+====================
+
+  * **[Fixed]** Any metadata will now cause metadata to render
+  * **[Fixed]** Login page loading of jQuery Backstretch plugin
+  * **[Fixed]** Search result page no longer shows excerpt as link text
+  * **[Fixed]** Documentation in README for local install
+  * **[Misc]** Dependency upgrades
+
 v0.14.0
 ====================
 
