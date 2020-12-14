@@ -1,20 +1,19 @@
-
 'use strict';
 
-const path              = require('path');
+const path = require('path');
 const contentProcessors = require('../functions/contentProcessors');
-const utils             = require('./utils');
-const pageHandler       = require('./page');
+const utils = require('./utils');
+const pageHandler = require('./page');
 
 let instance = null;
 let stemmers = null;
 
-function getLunr (config) {
+function getLunr(config) {
   if (instance === null) {
     instance = require('lunr');
-    instance.TinySegmenter = require('tiny-segmenter');
     require('lunr-languages/lunr.stemmer.support')(instance);
     require('lunr-languages/lunr.multi')(instance);
+    require('lunr-languages/tinyseg')(instance);
     config.searchExtraLanguages.forEach(lang =>
       require('lunr-languages/lunr.' + lang)(instance)
     );
@@ -22,7 +21,7 @@ function getLunr (config) {
   return instance;
 }
 
-function getStemmers (config) {
+function getStemmers(config) {
   if (stemmers === null) {
     const languages = ['en'].concat(config.searchExtraLanguages);
     stemmers = getLunr(config).multiLanguage.apply(null, languages);
@@ -30,7 +29,7 @@ function getStemmers (config) {
   return stemmers;
 }
 
-async function handler (query, config) {
+async function handler(query, config) {
   const contentDir = utils.normalizeDir(path.normalize(config.content_dir));
   const rawDocuments = await utils.promiseGlob(contentDir + '**/*.md');
   const potentialDocuments = await Promise.all(
@@ -42,7 +41,7 @@ async function handler (query, config) {
     .filter(doc => doc !== null);
 
   const lunrInstance = getLunr(config);
-  const idx = lunrInstance(function () {
+  const idx = lunrInstance(function() {
     this.use(getStemmers(config));
     this.field('title');
     this.field('body');
@@ -59,7 +58,7 @@ async function handler (query, config) {
   return searchResults;
 }
 
-async function processSearchResult (contentDir, config, query, result) {
+async function processSearchResult(contentDir, config, query, result) {
   const page = await pageHandler(contentDir + result.ref, config);
   page.excerpt = page.excerpt.replace(new RegExp('(' + query + ')', 'gim'), '<span class="search-query">$1</span>');
 
