@@ -11,8 +11,10 @@ For full Installation instructions, see the [Installation Guide](http://github.i
 `git clone https://github.com/wgalyen/Lookup.git && cd Lookup && npm install && npm run gulp && npm start`
 
 Supported Node Versions:
-- v10.x.x
-- v8.x.x
+- v14.x.x (Current)
+- v12.x.x (LTS)
+- v10.x.x (LTS)
+Please use the latest version available of the above major Node.js releases to ensure you have the latest security fixes!
 
 Demo & Docs
 -----------

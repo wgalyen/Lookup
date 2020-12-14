@@ -21,8 +21,8 @@ const config = require('./config.default.js');
 const express = require('express');
 
 // Create two subapps with different configurations
-const appEn = raneto(Object.assign({}, config, { base_url : '/en', locale : 'en', nowrap : true }));
-const appEs = raneto(Object.assign({}, config, { base_url : '/es', locale : 'es', nowrap : true }));
+const appEn = lookup(Object.assign({}, config, { base_url : '/en', locale : 'en', nowrap : true }));
+const appEs = lookup(Object.assign({}, config, { base_url : '/es', locale : 'es', nowrap : true }));
 
 // Create the main app
 const mainApp = express();
