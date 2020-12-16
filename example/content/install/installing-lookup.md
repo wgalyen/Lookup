@@ -16,4 +16,4 @@ Lookup:
 
 You can now start [creating pages](%base_url%/usage/creating-pages).
 
-**NOTE:** See the [Production Notes](%base_url%/install/production-notes) when installing for a live sit
+**NOTE:** See the [Production Notes](%base_url%/install/production-notes) when installing for a live site
